@@ -1,0 +1,27 @@
+{
+  "name": "husmusen",
+  "version": "1.0.0",
+  "description": "Husmusen (the house mouse) is a database system for museums and other institutions to show information about their items. ",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mushuset/husmusen.git"
+  },
+  "author": "Mushuset",
+  "license": "BSD-4-Clause",
+  "bugs": {
+    "url": "https://github.com/mushuset/husmusen/issues"
+  },
+  "homepage": "https://github.com/mushuset/husmusen#readme",
+  "dependencies": {
+    "colors": "^1.4.0",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "mariadb": "^3.0.0",
+    "sequelize": "^6.21.2"
+  }
+}
