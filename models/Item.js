@@ -1,5 +1,7 @@
 import { Err, Ok } from "../lib/okay-error.js"
 
+/** @typedef {import("./File").File_} File_ */
+
 /**
  * A unique identifier for {@link Item}. (In this implementation an inventory number.)
  * @typedef {number} ItemID
@@ -75,17 +77,7 @@ const ItemTypes = [
  * @property {Array<File_>} itemFiles    A list of {@link File_ Files} related to the item.
  */
 
-/**
- * @typedef {object} File_
- * @property {string}   name        E.g. a title of a book.
- * @property {FileType} type        MIME type of a file. E.g. 'image/png'
- * @property {string}   license     File license.
- * @property {ItemID}   itemID      Unique identifier for the database.
- * @property {Date}     addedAt     When the file was added.
- * @property {ItemID}   relatedItem {@link ItemID} for related the related {@link Item}.
- */
-
-export const Item = {
+const Item = {
     /**
      * Creates an {@link Item} object.
      * @param {string}   name
@@ -110,6 +102,8 @@ export const Item = {
         // if (!isUniqueItemID(itemID))
         //     return Err(`ItemID '${itemID}' is not unique!`)
 
+        const now = new Date(Date.now())
+
         /** @type {Item} */
         const item = {
             name,
@@ -117,10 +111,16 @@ export const Item = {
             keywords,
             type,
             itemID,
+            addedAt: now,
+            updatedAt: now,
             itemData,
-            customData
+            customData,
+            isExpired: false,
+            expireReason: "",
+            itemFiles: []
         }
 
         return Ok(item)
     }
 }
+export default Item
