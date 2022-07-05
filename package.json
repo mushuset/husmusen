@@ -21,7 +21,6 @@
     "colors": "^1.4.0",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
-    "mariadb": "^3.0.0",
-    "sequelize": "^6.21.2"
+    "mariadb": "^3.0.0"
   }
 }
