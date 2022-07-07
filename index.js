@@ -2,6 +2,7 @@ import express from "express"
 import { config as getDotenvOptions } from "dotenv"
 import getLogger from "./lib/log.js"
 import { startDB } from "./lib/database.js"
+import api from "./api/api.js"
 
 getDotenvOptions()
 const PORT       = process.env.PORT    || 12345
@@ -17,6 +18,7 @@ log("Starting up Husmusen...")
 startDB(DB_HOST, DB_PORT, DB_USER, DB_PASS)
 
 husmusen.get("/", (req, res) => res.send("Hello World!"))
+husmusen.use("/api", api)
 
 husmusen.listen(PORT, () => log("Husmusen started and listening on port:", PORT))
 
