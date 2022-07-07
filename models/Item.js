@@ -80,14 +80,14 @@ const ItemTypes = [
 const Item = {
     /**
      * Creates an {@link Item} object.
-     * @param {string}   name
-     * @param {string}   description
-     * @param {string}   keywords
-     * @param {ItemType} type
-     * @param {ItemID}   itemID
-     * @param {ItemData} itemData
-     * @param {*}        customData
-     * @returns {Ok|Err} A freshly created item
+     * @param {string}   name         The name of an object. E.g. title of a book.
+     * @param {string}   description  A description of the object.
+     * @param {string}   keywords     Commaseparated list of keywords.
+     * @param {ItemType} type         The type of item.
+     * @param {ItemID}   itemID       A unique identifier for the item. (In this implementation an inventory number.)
+     * @param {ItemData} itemData     The item's data. Differemt for every {@link ItemType}.
+     * @param {*}        customData   Custom data.
+     * @returns {Ok|Err} A freshly created item embedded in an {@link Ok} or an error embedded in an {@link Err}.
      */
     create: (name, description, keywords, type, itemID, itemData, customData) => {
         // Check if name is missing.
@@ -121,6 +121,45 @@ const Item = {
         }
 
         return Ok(item)
+    },
+    /**
+     * Gets an {@link Item} from the database.
+     * @param {itemId} itemID The {@link ItemID} of the {@link Item} to be fetched.
+     * @returns
+     */
+    get: itemID => {
+        try {
+            // const item = database.getItem(itemID)
+            return Ok("item")
+        } catch (error) {
+            return Err(error)
+        }
+    },
+    /**
+     * Saves an {@link Item} to the database.
+     * @param {Item} item The item to be saved.
+     */
+    save: item => {
+        try {
+            // database.saveItem(item)
+            return Ok(item)
+        } catch (error) {
+            return Err(error)
+        }
+    },
+    /**
+     * Update an {@link Item} in the database.
+     * @param {itemID} itemID The {@link ItemID} of the {@link Item} to be updated.
+     * @param {*} changedData The data that should be changed.
+     * @returns
+     */
+    update: (itemID, changedData) => {
+        try {
+            // update item
+            return Ok("newItem")
+        } catch (error) {
+            return Err(error)
+        }
     }
 }
 export default Item
