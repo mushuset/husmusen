@@ -5,12 +5,14 @@ specifiers:
   dotenv: ^16.0.1
   express: ^4.18.1
   mariadb: ^3.0.0
+  yaml: ^2.1.1
 
 dependencies:
   colors: 1.4.0
   dotenv: 16.0.1
   express: 4.18.1
   mariadb: 3.0.0
+  yaml: 2.1.1
 
 packages:
 
@@ -480,4 +482,9 @@ packages:
   /vary/1.1.2:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
     engines: {node: '>= 0.8'}
+    dev: false
+
+  /yaml/2.1.1:
+    resolution: {integrity: sha512-o96x3OPo8GjWeSLF+wOAbrPfhFOGY0W00GNaxCDv+9hkcDJEnev1yh8S7pgHF0ik6zc8sQLuL8hjHjJULZp8bw==}
+    engines: {node: '>= 14'}
     dev: false

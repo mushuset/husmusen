@@ -8,7 +8,7 @@ api.use("/1.0.0", api_1_0_0)
 api.get("/db_info", (req, res) => {
     fs.readFile("./config/db_info.json")
         .then(file   => file.toString())
-        .then(dbInfo => res.contentType("application/json").send(dbInfo))
+        .then(dbInfo => res.sendit(dbInfo))
         .catch(err   => res.status(500).send(err))
 })
 
