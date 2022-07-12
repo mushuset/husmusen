@@ -20,7 +20,7 @@ startDB(DB_HOST, DB_PORT, DB_USER, DB_PASS)
 
 husmusen.use(requestHandler)
 
-husmusen.get("/", (req, res) => res.send("Hello World!"))
+husmusen.get("/", (req, res) => res.send("Husmusen!"))
 husmusen.use("/api", api)
 
 husmusen.listen(PORT, () => log("Husmusen started and listening on port:", PORT))

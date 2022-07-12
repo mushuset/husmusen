@@ -1,6 +1,6 @@
 import { Router } from "express"
 import fs from "fs/promises"
-import api_1_0_0 from "./1.0.0/api.js"
+import api_1_0_0 from "./1.0.0/1.0.0.js"
 
 const api = Router()
 
