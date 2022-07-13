@@ -1,0 +1,20 @@
+{% extends "templates/base.njk" %}
+
+{% block head %}
+    <title>Husmusen - Sök</title>
+{% endblock %}
+
+{% block body %}
+    <form action="/app/control_panel" method="get">
+        <h1>Logga in</h1>
+        <p>För att komma åt kontrollpanelen behöver du logga in:</p>
+
+        <label for="username">Användarnamn:</label>
+        <input type="text" name="username" id="username">
+
+        <label for="password">Lösenord:</label>
+        <input type="password" name="password" id="password">
+
+        <input type="submit" value="Logga in!">
+    </form>
+{% endblock %}

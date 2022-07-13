@@ -4,6 +4,8 @@ import getLogger from "./lib/log.js"
 import { startDB } from "./lib/database.js"
 import api from "./api/api.js"
 import requestHandler from "./lib/requestHandler.js"
+import njk from "nunjucks"
+import url2njk from "./lib/url2njk.js"
 
 getDotenvOptions()
 const PORT       = process.env.PORT    || 12345
@@ -19,9 +21,19 @@ log("Starting up Husmusen...")
 startDB(DB_HOST, DB_PORT, DB_USER, DB_PASS)
 
 husmusen.use(requestHandler)
+njk.configure(
+    "app",
+    {
+        autoescape: true,
+        express: husmusen,
+        lstripBlocks: true,
+        trimBlocks: true,
+    }
+)
 
-husmusen.get("/", (req, res) => res.send("Husmusen!"))
-husmusen.use("/api", api)
+husmusen.use("/api",   api)
+husmusen.get('/app',   url2njk)
+husmusen.get('/app/*', url2njk)
 
+husmusen.get("/", (req, res) => res.redirect("/app"))
 husmusen.listen(PORT, () => log("Husmusen started and listening on port:", PORT))
-

@@ -1,0 +1,82 @@
+{% extends "templates/base.njk" %}
+
+{% block head %}
+    <title>Husmusen - Sök</title>
+{% endblock %}
+
+{% block body %}
+    <form action="/app/search" method="get">
+        <h1>Vad vill du söka efter?</h1>
+
+        <label for="keywords">Nyckelord:</label>
+        <input type="search" name="keywords" id="keywords">
+
+        <br>
+        <label for="freetext">Fritextsökning:</label>
+        <input type="search" name="freetext" id="freetext">
+
+        <fieldset>
+            <legend>Vilka typer av saker vill du söka efter?</legend>
+            <input type="checkbox" name="types" id="artpiece" value="ArtPiece">
+            <label for="artpiece" >ArtPiece</label>
+            <input type="checkbox" name="types" id="blueprint" value="Blueprint">
+            <label for="blueprint">Blueprint</label>
+            <input type="checkbox" name="types" id="book" value="Book">
+            <label for="book">Book</label>
+            <input type="checkbox" name="types" id="building" value="Building">
+            <label for="building">Building</label>
+            <input type="checkbox" name="types" id="collection" value="Collection">
+            <label for="collection">Collection</label>
+            <input type="checkbox" name="types" id="concept" value="Concept">
+            <label for="concept">Concept</label>
+            <input type="checkbox" name="types" id="culturalenvironment" value="CulturalEnvironment">
+            <label for="culturalenvironment">CulturalEnvironment</label>
+            <input type="checkbox" name="types" id="culturalheritage" value="CulturalHeritage">
+            <label for="culturalheritage">CulturalHeritage</label>
+            <input type="checkbox" name="types" id="document" value="Document">
+            <label for="document">Document</label>
+            <input type="checkbox" name="types" id="exhibition" value="Exhibition">
+            <label for="exhibition">Exhibition</label>
+            <input type="checkbox" name="types" id="film" value="Film">
+            <label for="film">Film</label>
+            <input type="checkbox" name="types" id="group" value="Group">
+            <label for="group">Group</label>
+            <input type="checkbox" name="types" id="historicalevent" value="HistoricalEvent">
+            <label for="historicalevent">HistoricalEvent</label>
+            <input type="checkbox" name="types" id="interactiveresource" value="InteractiveResource">
+            <label for="interactiveresource">InteractiveResource</label>
+            <input type="checkbox" name="types" id="physicalitem" value="PhysicalItem">
+            <label for="physicalitem">PhysicalItem</label>
+            <input type="checkbox" name="types" id="map" value="Map">
+            <label for="map">Map</label>
+            <input type="checkbox" name="types" id="organisation" value="Organisation">
+            <label for="organisation">Organisation</label>
+            <input type="checkbox" name="types" id="person" value="Person">
+            <label for="person">Person</label>
+            <input type="checkbox" name="types" id="photo" value="Photo">
+            <label for="photo">Photo</label>
+            <input type="checkbox" name="types" id="sketch" value="Sketch">
+            <label for="sketch">Sketch</label>
+            <input type="checkbox" name="types" id="sound" value="Sound">
+            <label for="sound">Sound</label>
+            <p>Om inget är specifierat så söks det efter allt.</p>
+        </fieldset>
+
+        <label for="sort">Sortera efter:</label>
+        <input type="radio" name="sort" id="relevance" value="relevance" checked>
+        <label for="relevance">Relevans i</label>
+
+        <input type="radio" name="sort" id="alphabetical" value="alphabetical">
+        <label for="alphabetical">Alfabetisk ordning</label>
+
+        <input type="radio" name="sort" id="latest-update" value="latest-update">
+        <label for="latest-update">Senast uppdaterad</label>
+
+        <br>
+        <input type="checkbox" name="reverse" id="reverse">
+        <label for="reverse">Sortera i omvänd ordning.</label>
+
+        <br>
+        <input type="submit" value="Sök!">
+    </form>
+{% endblock %}
