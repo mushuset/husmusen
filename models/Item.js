@@ -1,3 +1,4 @@
+import { DBPool } from "../lib/database.js"
 import { Err, Ok } from "../lib/okay-error.js"
 
 /** @typedef {import("./File").File_} File_ */
@@ -113,8 +114,8 @@ const Item = {
             itemID,
             addedAt: now,
             updatedAt: now,
-            itemData,
-            customData,
+            itemData: itemData ?? {},
+            customData: customData ?? {},
             isExpired: false,
             expireReason: "",
             itemFiles: []
@@ -127,26 +128,58 @@ const Item = {
      * @param {itemId} itemID The {@link ItemID} of the {@link Item} to be fetched.
      * @returns
      */
-    get: itemID => {
-        try {
-            // const item = database.getItem(itemID)
-            return Ok("item")
-        } catch (error) {
-            return Err(error)
+    get: itemID => new Promise(
+        async (resolve, reject) => {
+            const con = await DBPool.getConnection()
+            con.query("SELECT * FROM husmusen_items WHERE itemID = ?", [itemID])
+                .then(result => {
+                    delete result.meta
+                    if (!result[0])
+                        reject("NO_EXISTS")
+
+                    resolve(result[0])
+                })
+                .catch(reject).finally(() => con.end())
         }
-    },
+    ),
     /**
      * Saves an {@link Item} to the database.
      * @param {Item} item The item to be saved.
      */
-    save: item => {
-        try {
-            // database.saveItem(item)
-            return Ok(item)
-        } catch (error) {
-            return Err(error)
+    save: item => new Promise(
+        async (resolve, reject) => {
+            const con = await DBPool.getConnection()
+            con.query(`
+                INSERT INTO husmusen_items (
+                    name,
+                    description,
+                    keywords,
+                    type,
+                    itemID,
+                    addedAt,
+                    updatedAt,
+                    itemData,
+                    customData,
+                    isExpired,
+                    expireReason
+                ) VALUES (
+                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+                )
+            `, [
+                item.name,
+                item.description,
+                item.keywords,
+                item.type,
+                item.itemID,
+                item.addedAt,
+                item.updatedAt,
+                JSON.stringify(item.itemData),
+                JSON.stringify(item.customData),
+                item.isExpired,
+                item.expireReason
+            ]).then(() => resolve(item)).catch(reject).finally(() => con.end())
         }
-    },
+    ),
     /**
      * Update an {@link Item} in the database.
      * @param {itemID} itemID The {@link ItemID} of the {@link Item} to be updated.
