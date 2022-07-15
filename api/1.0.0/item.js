@@ -5,15 +5,16 @@ const itemApi = Router()
 
 itemApi.get("/search", (req, res) => res.sendit(req.originalUrl))
 itemApi.get("/info/:id", (req, res) => {
-    const itemID = req.params.id
+    const rawItemID       = req.params.id
+    const sanitisedItemID = rawItemID.replace(/<\w*>[\S\s]*<\/\w>/g, "")
 
-    Item.get(itemID)
+    Item.get(sanitisedItemID)
         .then(item => res.sendit(item))
         .catch(err => {
             if (err === "NO_EXISTS")
-                return res.status(404).send(`There exists no item with ItemID '${itemID}'!`)
+                return res.status(404).send(`There exists no item with ItemID '${sanitisedItemID}'!`)
 
-            res.status(500).send(`There was an error while getting item with ItemID '${itemID}'!`)
+            res.status(500).send(`There was an error while getting item with ItemID '${sanitisedItemID}'!`)
             console.error(err)
         })
 })
