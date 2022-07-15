@@ -7,7 +7,7 @@ itemApi.get("/search", (req, res) => res.sendit(req.originalUrl))
 itemApi.get("/info/:id", (req, res) => {
     const rawItemID         = req.params.id
     const fixedLengthItemID = rawItemID.length < 16 ? rawItemID : rawItemID.substring(0, 16)
-    const sanitisedItemID   = fixedLengthItemID.replace(/<[\S\s]*>[\S\s]*<\/[\S\s]*>/g, "")
+    const sanitisedItemID   = fixedLengthItemID.replace(/<[\S\s]*>[\S\s]*$/g, "")
 
     Item.get(sanitisedItemID)
         .then(item => res.sendit(item))
