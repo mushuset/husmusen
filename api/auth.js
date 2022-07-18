@@ -64,7 +64,69 @@ authApi.post(
     (req, res) => res.sendit(req.auth)
 )
 
-authApi.post("/new", (req, res) => res.send("UNIMPLEMENTED!"))
+authApi.post(
+    "/new",
+    authHandler({ requiresAdmin: true }),
+    async (req, res) => {
+        const { username, password, isAdmin } = req.data
+
+        if (!username)
+            return res.status(400).send("You must define a username!")
+
+        if (!password)
+            return res.status(400).send("You must define a password!")
+
+        if (isAdmin === undefined)
+            return res.status(400).send("You must define 'isAdmin'!")
+
+        if (!username.match(/^\w{0,32}$/))
+            return res.status(400).send("Username can only be A-Z, a-z, 0-9, and underscore (_)! It must be no more than 32 characters!")
+
+        const userExists = await queryDB(
+            "SELECT username FROM husmusen_users WHERE username = ?",
+            [ username ],
+            true
+        ).catch(
+            err => {
+                log(colors.red("ERROR!", "Encountered an error."))
+                console.error(err)
+                res.status(500).send("There was an while looking up if the username is taken!")
+            }
+        )
+
+        if (userExists)
+            return res.status(400).send("That user already exists!")
+
+
+        log(`Creating user '${username}'...`)
+
+        const passwordHash = await argon2.hash(
+            password,
+            {
+                memoryCost: 8092,
+                hashLenght: 32,
+                timeCost: 4,
+                parallellism: 2,
+            }
+        )
+
+        queryDB(
+            "INSERT INTO husmusen_users (username, password, isAdmin) VALUES (?, ?, ?)",
+            [ username, passwordHash, isAdmin ? 1 : 0 ]
+        ).then(
+            () => {
+                log("User created!")
+                res.sendit({ username, password, isAdmin })
+            }
+        ).catch(
+            err => {
+                log(colors.red("ERROR!", "Encountered an error."))
+                console.error(err)
+                res.status(500).send("There was an error saving the user!")
+            }
+        )
+    }
+)
 
 authApi.post(
     "/change_password",
