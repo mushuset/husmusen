@@ -1,9 +1,10 @@
 import { Router } from "express"
 import getLogger from "../lib/log.js"
 import argon2 from "argon2"
-import { DBPool } from "../lib/database.js"
+import { DBPool, queryDB } from "../lib/database.js"
 import colors from "colors"
 import jwt from "jsonwebtoken"
+import authHandler from "../lib/authHandler.js"
 
 const FOUR_HOURS_IN_MS = 4 * 60 * 60 * 1000
 
@@ -57,11 +58,57 @@ authApi.post(
     }
 )
 
+authApi.post(
+    "/who",
+    authHandler({ requiresAdmin: false }),
+    (req, res) => res.sendit(req.auth)
+)
+
 authApi.post("/new", (req, res) => res.send("UNIMPLEMENTED!"))
-authApi.post("/change_pass", (req, res) => res.send("UNIMPLEMENTED!"))
+
+authApi.post(
+    "/change_password",
+    authHandler({ requiresAdmin: false }),
+    async (req, res) => {
+        const { currentPassword, newPassword } = req.data
+
+        if (!currentPassword || !newPassword)
+            return res.status(400).send("You need to specify both 'currentPassword' and 'newPassword'!")
+
+        const userSearch = await queryDB("SELECT * FROM husmusen_users WHERE username = ?", [ req.auth.username ], true)
+            .catch(err => {
+                log(colors.red("ERROR!", "Encountered an error."))
+                console.error(err)
+                res.status(500).send("There was an error looking up the user!")
+            })
+
+        const passwordMatches = await argon2.verify(userSearch.password, currentPassword)
+        if (!passwordMatches)
+            return res.status(401).send("Your 'currentPassword' is incorrect!")
+
+        const newPasswordHAsh = await argon2.hash(
+            newPassword,
+            {
+                memoryCost: 8092,
+                hashLenght: 32,
+                timeCost: 4,
+                parallellism: 2,
+            }
+        )
+
+        queryDB(
+            "UPDATE husmusen_users SET password = ? WHERE username = ?",
+            [ newPasswordHAsh, req.auth.username ]
+        ).then(
+            () => res.sendit({ username: req.auth.username, password: newPassword })
+        )
+
+    }
+)
+
 authApi.post("/delete/:user", (req, res) => res.send("UNIMPLEMENTED!"))
 
-// NOTE: This should only ever be active in DEVELOPMENT, NEVER in PRODUCTION!
+// NOTE: This should only ever be active in DEVELOPMENT, NEVER IN PRODUCTION!
 // This makes it so that you can easily create an initial admin, that can then manage users!
 if (process.env.DEBUG === "true")
     authApi.post(
