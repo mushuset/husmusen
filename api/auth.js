@@ -22,16 +22,17 @@ authApi.post(
         if (!password)
             return res.status(400).send("You must specify the password!")
 
-        const con  = await DBPool.getConnection()
-        const userSearch = await con.query("SELECT * FROM husmusen_users WHERE username = ?", [ username ])
-            .catch(err => {
+        const user = await queryDB(
+            "SELECT * FROM husmusen_users WHERE username = ?",
+            [ username ],
+            true
+        ).catch(
+            err => {
                 log(colors.red("ERROR!", "Encountered an error."))
                 console.error(err)
                 res.status(500).send("There was an error looking up the user!")
-            })
-
-        delete userSearch.meta
-        const user = userSearch[0]
+            }
+        )
 
         if (!user)
             return res.status(400).send("It seems as if that user doesn't exist.")
@@ -96,7 +97,6 @@ authApi.post(
 
         if (userExists)
             return res.status(400).send("That user already exists!")
-
 
         log(`Creating user '${username}'...`)
 
@@ -164,7 +164,6 @@ authApi.post(
         ).then(
             () => res.sendit({ username: req.auth.username, password: newPassword })
         )
-
     }
 )
 
@@ -187,11 +186,13 @@ if (process.env.DEBUG === "true")
             if (!username.match(/^\w{0,32}$/))
                 return res.status(400).send("Username can only be A-Z, a-z, 0-9, and underscore (_)! It must be no more than 32 characters!")
 
-            const con = await DBPool.getConnection()
-            const userExists = await con.query("SELECT username FROM husmusen_users WHERE username = ?", [username])
-            delete userExists.meta
+            const userExists = await queryDB(
+                "SELECT username FROM husmusen_users WHERE username = ?",
+                [ username ],
+                true
+            )
 
-            if (userExists[0])
+            if (userExists)
                 return res.status(400).send("That user already exists!")
 
             log(`Creating user '${username}'...`)
@@ -206,7 +207,7 @@ if (process.env.DEBUG === "true")
                 }
             )
 
-            con.query(
+            queryDB(
                 "INSERT INTO husmusen_users (username, password, isAdmin) VALUES (?, ?, 1)",
                 [ username, passwordHash ]
             ).then(
@@ -220,8 +221,6 @@ if (process.env.DEBUG === "true")
                     console.error(err)
                     res.status(500).send("There was an error saving the user!")
                 }
-            ).finally(
-                () => con.end()
             )
         }
     )

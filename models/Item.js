@@ -1,4 +1,4 @@
-import { DBPool } from "../lib/database.js"
+import { queryDB } from "../lib/database.js"
 import { Err, Ok } from "../lib/okay-error.js"
 
 /** @typedef {import("./File").File_} File_ */
@@ -130,16 +130,18 @@ const Item = {
      */
     get: itemID => new Promise(
         async (resolve, reject) => {
-            const con = await DBPool.getConnection()
-            con.query("SELECT * FROM husmusen_items WHERE itemID = ?", [itemID])
-                .then(result => {
-                    delete result.meta
-                    if (!result[0])
+            queryDB(
+                "SELECT * FROM husmusen_items WHERE itemID = ?",
+                [ itemID ],
+                true
+            ).then(
+                result => {
+                    if (!result)
                         reject("NO_EXISTS")
 
                     resolve(result[0])
-                })
-                .catch(reject).finally(() => con.end())
+                }
+            ).catch(reject)
         }
     ),
     /**
@@ -148,36 +150,40 @@ const Item = {
      */
     save: item => new Promise(
         async (resolve, reject) => {
-            const con = await DBPool.getConnection()
-            con.query(`
-                INSERT INTO husmusen_items (
-                    name,
-                    description,
-                    keywords,
-                    type,
-                    itemID,
-                    addedAt,
-                    updatedAt,
-                    itemData,
-                    customData,
-                    isExpired,
-                    expireReason
-                ) VALUES (
-                    ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
-                )
-            `, [
-                item.name,
-                item.description,
-                item.keywords,
-                item.type,
-                item.itemID,
-                item.addedAt,
-                item.updatedAt,
-                JSON.stringify(item.itemData),
-                JSON.stringify(item.customData),
-                item.isExpired,
-                item.expireReason
-            ]).then(() => resolve(item)).catch(reject).finally(() => con.end())
+            queryDB(
+                `
+                    INSERT INTO husmusen_items (
+                        name,
+                        description,
+                        keywords,
+                        type,
+                        itemID,
+                        addedAt,
+                        updatedAt,
+                        itemData,
+                        customData,
+                        isExpired,
+                        expireReason
+                    ) VALUES (
+                        ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?
+                    )
+                `, [
+                    item.name,
+                    item.description,
+                    item.keywords,
+                    item.type,
+                    item.itemID,
+                    item.addedAt,
+                    item.updatedAt,
+                    JSON.stringify(item.itemData),
+                    JSON.stringify(item.customData),
+                    item.isExpired,
+                    item.expireReason
+                ],
+                true
+            ).then(
+                () => resolve(item)
+            ).catch(reject)
         }
     ),
     /**
