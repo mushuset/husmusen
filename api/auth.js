@@ -44,7 +44,7 @@ authApi.post(
                 username,
                 isAdmin: user.isAdmin
             },
-            "SUPER SECRET", // TODO: SHOULD BE CHANGED
+            process.env.TOKEN_SECRET ?? "SUPER SECRET", // TODO: Could be randomly generated each time the server starts.
             {
                 expiresIn: "4h"
             }
