@@ -167,11 +167,36 @@ authApi.post(
             [ newPasswordHAsh, req.auth.username ]
         ).then(
             () => res.sendit({ username: req.auth.username, password: newPassword })
+        ).catch(
+            err => {
+                log(colors.red("ERROR!", "Encountered an error."))
+                console.error(err)
+                res.status(500).send("There was an error saving your new password!")
+            }
         )
     }
 )
 
-authApi.post("/delete/:user", (req, res) => res.send("UNIMPLEMENTED!"))
+authApi.post(
+    "/delete/:username",
+    authHandler({ requiresAdmin: true }),
+    (req, res) => {
+        if (req.params.username === req.auth.username)
+            return res.send(402).send("You cannot delete yourself!")
+
+        queryDB(
+            "DELETE FROM husmusen_users WHERE username = ?",
+            [ req.params.username ]
+        ).then(
+            () => res.sendit({ username: req.params.username })
+        ).catch(
+            err => {
+                log(colors.red("ERROR!", "Encountered an error."))
+                console.error(err)
+                res.status(500).send("There was an error deleting that user!")
+            }
+        )
+    })
 
 // NOTE: This should only ever be active in DEVELOPMENT, NEVER IN PRODUCTION!
 // This makes it so that you can easily create an initial admin, that can then manage users!
