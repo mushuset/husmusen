@@ -128,7 +128,7 @@ authApi.post(
             }
         )
 
-        log(`Created ${isAdmin ? "admin" : "user"} '${username}'!`)
+        log(`Admin '${req.auth.username}' created ${isAdmin ? "admin" : "user"} '${username}'!`)
     }
 )
 
@@ -188,7 +188,10 @@ authApi.post(
             "DELETE FROM husmusen_users WHERE username = ?",
             [ req.params.username ]
         ).then(
-            () => res.sendit({ username: req.params.username })
+            () => {
+                res.sendit({ username: req.params.username })
+            log(`Admin '${req.auth.username}' deleted the user '${req.params.username}'!`)
+            }
         ).catch(
             err => {
                 log(colors.red("ERROR!", "Encountered an error."))
