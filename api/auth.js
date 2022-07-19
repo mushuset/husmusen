@@ -1,7 +1,7 @@
 import { Router } from "express"
 import getLogger from "../lib/log.js"
 import argon2 from "argon2"
-import { DBPool, queryDB } from "../lib/database.js"
+import { queryDB } from "../lib/database.js"
 import colors from "colors"
 import jwt from "jsonwebtoken"
 import authHandler from "../lib/authHandler.js"
@@ -56,6 +56,8 @@ authApi.post(
             token,
             validUntil: new Date(Date.now() + FOUR_HOURS_IN_MS)
         })
+
+        log(`${user.isAdmin ? "Admin" : "User"} '${username}' logged in!`)
     }
 )
 
@@ -125,6 +127,8 @@ authApi.post(
                 res.status(500).send("There was an error saving the user!")
             }
         )
+
+        log(`Created ${isAdmin ? "admin" : "user"} '${username}'!`)
     }
 )
 
@@ -171,7 +175,8 @@ authApi.post("/delete/:user", (req, res) => res.send("UNIMPLEMENTED!"))
 
 // NOTE: This should only ever be active in DEVELOPMENT, NEVER IN PRODUCTION!
 // This makes it so that you can easily create an initial admin, that can then manage users!
-if (process.env.DEBUG === "true")
+if (process.env.DEBUG === "true") {
+    log(colors.yellow("WARNING!"), "Enabling debug creation of admin users on '/api/auth/debug_admin_creation'!")
     authApi.post(
         "/debug_admin_creation",
         async (req, res) =>{
@@ -222,7 +227,10 @@ if (process.env.DEBUG === "true")
                     res.status(500).send("There was an error saving the user!")
                 }
             )
+
+            log(`Forced the creation of admin '${username}' via '/api/auth/debug_admin_creation'!`)
         }
     )
+}
 
 export default authApi
