@@ -105,3 +105,4 @@ dist
 
 # Don't upload the config directory...
 config/
+data/
