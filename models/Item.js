@@ -139,7 +139,7 @@ const Item = {
                     if (!result)
                         reject("NO_EXISTS")
 
-                    resolve(result[0])
+                    resolve(result)
                 }
             ).catch(reject)
         }
