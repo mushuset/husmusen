@@ -42,7 +42,7 @@ itemApi.get(
     (req, res) => {
         const rawItemID         = req.params.id
         const fixedLengthItemID = rawItemID.length < 16 ? rawItemID : rawItemID.substring(0, 16)
-        const sanitisedItemID   = fixedLengthItemID.replace(/<[\S\s]*>[\S\s]*$/g, "")
+        const sanitisedItemID   = fixedLengthItemID.replace(/<script[\S\s]*>[\S\s]*$/g, "")
 
         Item.get(sanitisedItemID)
             .then(item => res.sendit(item))
