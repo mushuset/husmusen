@@ -17,8 +17,9 @@ itemApi.get(
         const SORT     = req.query.sort     ?? "alphabetical"
         const REVERSE  = req.query.reverse  ?? ""
 
+        // TODO: Check for only valid types maybe?
         const typeSearchSQL = TYPES !== ""
-            ? TYPES.split(",").map(type => `type LIKE '%${type}%'`).join(" OR ")
+            ? TYPES.split(",").map(type => `type = '${type}'`).join(" OR ")
             : ""
 
         console.log(typeSearchSQL)
