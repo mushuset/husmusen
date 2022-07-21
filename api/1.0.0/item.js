@@ -4,6 +4,7 @@ import Item from "../../models/Item.js"
 import authHandler from "../../lib/authHandler.js"
 import { queryDB } from "../../lib/database.js"
 import colors from "colors"
+import { ItemTypes } from "../../models/Item.js"
 
 const itemApi = Router()
 const log = getLogger("Database |", "magenta")
@@ -17,20 +18,19 @@ itemApi.get(
         const SORT     = req.query.sort     ?? "alphabetical"
         const REVERSE  = req.query.reverse  ?? ""
 
-        // TODO: Check for only valid types maybe?
         const typeSearchSQL = TYPES !== ""
-            ? TYPES.split(",").map(type => `type = '${type}'`).join(" OR ")
-            : ""
+            ? TYPES.split(",").filter(type => ItemTypes.includes(type))
+            : ItemTypes
 
-        console.log(typeSearchSQL)
+        const reverseSearchSQL = REVERSE === "1" || REVERSE === "on" || REVERSE === "true" ? "DESC" : "ASC"
 
         queryDB(`
-            SELECT * FROM husmusen_items ${typeSearchSQL !== "" ? `WHERE ${typeSearchSQL}` : ""}
-        `).then(
+            SELECT * FROM husmusen_items WHERE type IN (?) ORDER BY name ${reverseSearchSQL}
+        `,
+        [
+            typeSearchSQL
+        ]).then(
             result => {
-                if (REVERSE === "1" || REVERSE === "on" || REVERSE === "true")
-                    return res.sendit(result.reverse())
-
                 res.sendit(result)
             }
         ).catch(

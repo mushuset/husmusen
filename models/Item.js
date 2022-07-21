@@ -36,7 +36,7 @@ import { Err, Ok } from "../lib/okay-error.js"
  */
 
 /** @type {Array<ItemType>} */
-const ItemTypes = [
+export const ItemTypes = [
     "ArtPiece",
     "Blueprint",
     "Book",
