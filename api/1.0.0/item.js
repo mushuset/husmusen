@@ -15,7 +15,7 @@ itemApi.get(
         const FREETEXT = req.query.freetext ?? ""
         const KEYWORDS = req.query.keywords ?? ""
         const SORT     = req.query.sort     ?? "alphabetical"
-        const REVERSE  = req.query.reverser ?? ""
+        const REVERSE  = req.query.reverse  ?? ""
 
         const typeSearchSQL = TYPES !== ""
             ? TYPES.split(",").map(type => `type LIKE '%${type}%'`).join(" OR ")
@@ -26,7 +26,12 @@ itemApi.get(
         queryDB(`
             SELECT * FROM husmusen_items ${typeSearchSQL !== "" ? `WHERE ${typeSearchSQL}` : ""}
         `).then(
-            result => res.sendit(result)
+            result => {
+                if (REVERSE === "1" || REVERSE === "on" || REVERSE === "true")
+                    return res.sendit(result.reverse())
+
+                res.sendit(result)
+            }
         ).catch(
             err => {
                 res.status(500).send("Encountered an error while searching the database!")
