@@ -5,9 +5,12 @@ import authHandler from "../../lib/authHandler.js"
 import { queryDB } from "../../lib/database.js"
 import colors from "colors"
 import { ItemTypes } from "../../models/Item.js"
+import getKeywords from "../../lib/keywords.js"
 
 const itemApi = Router()
 const log = getLogger("Database |", "magenta")
+
+const VALID_SORT_FIELDS = ["name", "relevance"]
 
 itemApi.get(
     "/search",
@@ -57,13 +60,42 @@ itemApi.get(
                     return res.status(404).send(`There exists no item with ItemID '${sanitisedItemID}'!`)
 
                 res.status(500).send(`There was an error while getting item with ItemID '${sanitisedItemID}'!`)
+                log(colors.red("ERROR!"), "Encountered an error while searching the database!")
                 console.error(err)
             })
     }
 )
 
-itemApi.get("/keywords", (req, res) => res.sendit(req.originalUrl))
-itemApi.get("/keywords/:type", (req, res) => res.sendit(req.originalUrl))
+itemApi.get(
+    "/keywords",
+    (req, res) => {
+        getKeywords()
+            .then(keywords => res.sendit(keywords))
+            .catch(err => {
+                res.status(500).send("There was an error getting the keywords...")
+                log(colors.red("ERROR!"), "Encountered an error while searching the database!")
+                console.error(err)
+            })
+    }
+)
+
+itemApi.get(
+    "/keywords/:type",
+    (req, res) => {
+        const type = req.params.type
+
+        if (!ItemTypes.includes(type))
+            return res.status(400).send("Your type isn't valid! Please use one of the following: " + ItemTypes.join(", "))
+
+        getKeywords([type])
+            .then(keywords => res.sendit(keywords))
+            .catch(err => {
+                res.status(500).send("There was an error getting the keywords...")
+                log(colors.red("ERROR!"), "Encountered an error while searching the database!")
+                console.error(err)
+            })
+    }    
+)
 
 itemApi.post(
     "/new",
