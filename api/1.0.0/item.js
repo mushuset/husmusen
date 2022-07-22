@@ -10,28 +10,35 @@ import getKeywords from "../../lib/keywords.js"
 const itemApi = Router()
 const log = getLogger("Database |", "magenta")
 
-const VALID_SORT_FIELDS = ["name", "relevance"]
+const VALID_SORT_FIELDS = ["name", "relevance", "lastUpdated"]
 
 itemApi.get(
     "/search",
-    (req, res) => {
+    async (req, res) => {
         const TYPES    = req.query.types    ?? ""
         const FREETEXT = req.query.freetext ?? ""
         const KEYWORDS = req.query.keywords ?? ""
-        const SORT     = req.query.sort     ?? "alphabetical"
+        const SORT     = req.query.sort     ?? "name"
         const REVERSE  = req.query.reverse  ?? ""
 
-        const typeSearchSQL = TYPES !== ""
-            ? TYPES.split(",").filter(type => ItemTypes.includes(type))
-            : ItemTypes
+        const validTypes = TYPES !== "" ? TYPES.split(",").filter(type => ItemTypes.includes(type)) : ItemTypes
+        if (!validTypes[0])
+            return res.status(400).send("No valid types entered!")
+
+        const allKeywords      = await getKeywords(validTypes)
+        const validKeywords    = KEYWORDS.split(",").filter(keyword => allKeywords.includes(keyword))
+        const keywordSearchSQL = validKeywords[0] ? `AND (FIND_IN_SET('${validKeywords.join("', keywords) OR FIND_IN_SET('")}', keywords))` : ""
 
         const reverseSearchSQL = REVERSE === "1" || REVERSE === "on" || REVERSE === "true" ? "DESC" : "ASC"
 
         queryDB(`
-            SELECT * FROM husmusen_items WHERE type IN (?) ORDER BY name ${reverseSearchSQL}
+            SELECT * FROM husmusen_items 
+                WHERE type IN (?)
+                ${keywordSearchSQL}
+                ORDER BY name ${reverseSearchSQL}
         `,
         [
-            typeSearchSQL
+            validTypes
         ]).then(
             result => {
                 res.sendit(result)
