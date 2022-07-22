@@ -27,7 +27,7 @@ itemApi.get(
 
         const allKeywords      = await getKeywords(validTypes)
         const validKeywords    = KEYWORDS.split(",").filter(keyword => allKeywords.includes(keyword))
-        const keywordSearchSQL = validKeywords[0] ? `AND (FIND_IN_SET('${validKeywords.join("', keywords) OR FIND_IN_SET('")}', keywords))` : ""
+        const keywordSearchSQL = validKeywords[0] ? `AND keywords RLIKE '(?-i)(?<=,|^)(${validKeywords.join("|")})(?=,|$)'` : ""
 
         const reverseSearchSQL = REVERSE === "1" || REVERSE === "on" || REVERSE === "true" ? "DESC" : "ASC"
 
