@@ -136,15 +136,16 @@ itemApi.post(
         const item = itemRequest.data
 
         Item.save(item)
-            .then(item => res.sendit(item))
+            .then(item => {
+                res.sendit(item)
+                log(`${req.auth.isAdmin ? "Admin" : "User"} '${req.auth.username}' created item with ID '${itemID}'.`)
+            })
             .catch(err => {
                 if (err.code === "ER_DUP_ENTRY")
                     return res.status(500).send(`The itemID '${itemID}' is already taken!`)
                 res.status(500).send("Error while saving the item!")
                 console.error(err)
             })
-
-        log(`${req.auth.isAdmin ? "Admin" : "User"} '${req.auth.username}' created item with ID '${itemID}'.`)
     }
 )
 
@@ -167,7 +168,11 @@ itemApi.post(
                         return res.status(400).send("You must specify a reason!")
 
                     Item.mark(itemID, reason)
-                        .then(() => res.sendit(Object.assign(itemExists, { isExpired: 1, expireReason: reason })))
+                        .then(
+                            () => {
+                                res.sendit(Object.assign(itemExists, { isExpired: 1, expireReason: reason }))
+                                log(`${req.auth.isAdmin ? "Admin" : "User"} '${req.auth.username}' marked item with ID '${itemID}'. Reason: ${reason}`)
+                            })
                         .catch(
                             err => {
                                 res.status(500).send("There was an marking the item...")
@@ -175,8 +180,6 @@ itemApi.post(
                                 console.error(err)
                             }
                         )
-
-                    log(`${req.auth.isAdmin ? "Admin" : "User"} '${req.auth.username}' marked item with ID '${itemID}'. Reason: ${reason}`)
                 }
             )
             .catch(
@@ -202,7 +205,12 @@ itemApi.post(
                         return res.status(400).send("That item doesn't exist!")
 
                     Item.delete(itemID)
-                        .then(() => res.sendit(itemExists))
+                        .then(
+                            () => {
+                                res.sendit(itemExists)
+                                log(`Admin '${req.auth.username}' deleted item with ID '${itemID}'.`)
+                            }
+                        )
                         .catch(
                             err => {
                                 res.status(500).send("There was an marking the item...")
@@ -210,8 +218,6 @@ itemApi.post(
                                 console.error(err)
                             }
                         )
-
-                    log(`Admin '${req.auth.username}' deleted item with ID '${itemID}'.`)
                 }
 
             )
