@@ -10,8 +10,9 @@ import getKeywords from "../../lib/keywords.js"
 const itemApi = Router()
 const log = getLogger("Database |", "magenta")
 
-const VALID_SORT_FIELDS = ["name", "relevance", "lastUpdated"]
+const VALID_SORT_FIELDS = ["name", "relevance", "lastUpdated", "addedAt", "itemID"]
 
+// TODO: Implement freetext/fulltext search!
 itemApi.get(
     "/search",
     async (req, res) => {
@@ -29,20 +30,21 @@ itemApi.get(
         const validKeywords    = KEYWORDS.split(",").filter(keyword => allKeywords.includes(keyword))
         const keywordSearchSQL = validKeywords[0] ? `AND keywords RLIKE '(?-i)(?<=,|^)(${validKeywords.join("|")})(?=,|$)'` : ""
 
+        const sortSearchSQL    = `${VALID_SORT_FIELDS.includes(SORT) ? SORT : "name"}`
         const reverseSearchSQL = REVERSE === "1" || REVERSE === "on" || REVERSE === "true" ? "DESC" : "ASC"
 
-        queryDB(`
-            SELECT * FROM husmusen_items 
-                WHERE type IN (?)
-                ${keywordSearchSQL}
-                ORDER BY name ${reverseSearchSQL}
-        `,
-        [
-            validTypes
-        ]).then(
-            result => {
-                res.sendit(result)
-            }
+        queryDB(
+            `
+                SELECT * FROM husmusen_items
+                    WHERE type IN (?)
+                    ${keywordSearchSQL}
+                    ORDER BY ${sortSearchSQL} ${reverseSearchSQL}
+            `,
+            [
+                validTypes
+            ]
+        ).then(
+            result => res.sendit(result)
         ).catch(
             err => {
                 res.status(500).send("Encountered an error while searching the database!")
@@ -101,7 +103,7 @@ itemApi.get(
                 log(colors.red("ERROR!"), "Encountered an error while searching the database!")
                 console.error(err)
             })
-    }    
+    }
 )
 
 itemApi.post(
