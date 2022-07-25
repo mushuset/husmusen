@@ -100,6 +100,7 @@ const Item = {
             return Err(`Type '${type}' is not a valid 'ItemType'!`)
 
         // TODO: Check if itemID is unique!
+        // NOTE: Whether or not the `ItemID` is unique is check by the `Item.save()` method...
         // if (!isUniqueItemID(itemID))
         //     return Err(`ItemID '${itemID}' is not unique!`)
 
@@ -125,11 +126,11 @@ const Item = {
     },
     /**
      * Gets an {@link Item} from the database.
-     * @param {itemId} itemID The {@link ItemID} of the {@link Item} to be fetched.
+     * @param {ItemID} itemID The {@link ItemID} of the {@link Item} to be fetched.
      * @returns
      */
     get: itemID => new Promise(
-        async (resolve, reject) => {
+        (resolve, reject) => {
             queryDB(
                 "SELECT * FROM husmusen_items WHERE itemID = ?",
                 [ itemID ],
@@ -188,7 +189,7 @@ const Item = {
     ),
     /**
      * Update an {@link Item} in the database.
-     * @param {itemID} itemID The {@link ItemID} of the {@link Item} to be updated.
+     * @param {ItemID} itemID The {@link ItemID} of the {@link Item} to be updated.
      * @param {*} changedData The data that should be changed.
      * @returns
      */
@@ -199,6 +200,24 @@ const Item = {
         } catch (error) {
             return Err(error)
         }
-    }
+    },
+    /**
+     * Marks an {@link Item} as expired.
+     * @param {ItemID} itemID The {@link ItemID} of the item to mark as expired.
+     * @param {string} reason The reason for marking it as expired.
+     * @returns {Promise} Resolves on success, rejects on error.
+     */
+    mark: (itemID, reason) => new Promise(
+        (resolve, reject) => {
+            queryDB(
+                `
+                    UPDATE husmusen_items
+                        SET isExpired = 1, expireReason = ?
+                        WHERE itemID = ?
+                `,
+                [ reason, itemID ]
+            ).then(resolve).catch(reject)
+        }
+    )
 }
 export default Item

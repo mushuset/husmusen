@@ -69,7 +69,7 @@ itemApi.get(
                     return res.status(404).send(`There exists no item with ItemID '${sanitisedItemID}'!`)
 
                 res.status(500).send(`There was an error while getting item with ItemID '${sanitisedItemID}'!`)
-                log(colors.red("ERROR!"), "Encountered an error while searching the database!")
+                log(colors.red("ERROR!"), "Encountered an error while getting the item!")
                 console.error(err)
             })
     }
@@ -82,7 +82,7 @@ itemApi.get(
             .then(keywords => res.sendit(keywords))
             .catch(err => {
                 res.status(500).send("There was an error getting the keywords...")
-                log(colors.red("ERROR!"), "Encountered an error while searching the database!")
+                log(colors.red("ERROR!"), "Encountered an error while getting the keywords!")
                 console.error(err)
             })
     }
@@ -100,7 +100,7 @@ itemApi.get(
             .then(keywords => res.sendit(keywords))
             .catch(err => {
                 res.status(500).send("There was an error getting the keywords...")
-                log(colors.red("ERROR!"), "Encountered an error while searching the database!")
+                log(colors.red("ERROR!"), "Encountered an error while getting keywords!")
                 console.error(err)
             })
     }
@@ -149,7 +149,44 @@ itemApi.post(
 )
 
 itemApi.post("/edit/:id", (req, res) => res.sendit(req.originalUrl))
-itemApi.post("/mark/:id", (req, res) => res.sendit(req.originalUrl))
+
+itemApi.post(
+    "/mark/:id",
+    authHandler({ requiresAdmin: false }),
+    async (req, res) => {
+        const itemID = req.params.id
+
+        Item.get(itemID)
+            .then(
+                itemExists => {
+                    if (!itemExists)
+                    return res.status(400).send("That item doesn't exist!")
+
+                    const reason = req.data.reason
+                    if (!reason)
+                        return res.status(400).send("You must specify a reason!")
+
+                    Item.mark(itemID, reason)
+                        .then(() => res.sendit(Object.assign(itemExists, { isExpired: 1, expireReason: reason })))
+                        .catch(
+                            err => {
+                                res.status(500).send("There was an marking the item...")
+                                log(colors.red("ERROR!"), "Encountered an error while marking the item!")
+                                console.error(err)
+                            }
+                        )
+                }
+            )
+            .catch(
+                err => {
+                    res.status(500).send("There was an marking the item...")
+                    log(colors.red("ERROR!"), "Encountered an error while marking the item!")
+                    console.error(err)
+                }
+            )
+    }
+)
+
 itemApi.post("/delete/:id", (req, res) => res.sendit(req.originalUrl))
 
 export default itemApi
