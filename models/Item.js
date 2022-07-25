@@ -218,6 +218,19 @@ const Item = {
                 [ reason, itemID ]
             ).then(resolve).catch(reject)
         }
+    ),
+    /**
+     * Deletes an item from the database.
+     * @param {ItemID} itemID The {@link ItemID} of the item to delete.
+     * @returns {Promise} Resolves on success, rejects on error.
+     */
+    delete: itemID => new Promise(
+        (resolve, reject) => {
+            queryDB(
+                "DELETE FROM husmusen_items WHERE itemID = ?",
+                [ itemID ]
+            ).then(resolve).catch(reject)
+        }
     )
 }
 export default Item

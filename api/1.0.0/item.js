@@ -153,14 +153,14 @@ itemApi.post("/edit/:id", (req, res) => res.sendit(req.originalUrl))
 itemApi.post(
     "/mark/:id",
     authHandler({ requiresAdmin: false }),
-    async (req, res) => {
+    (req, res) => {
         const itemID = req.params.id
 
         Item.get(itemID)
             .then(
                 itemExists => {
                     if (!itemExists)
-                    return res.status(400).send("That item doesn't exist!")
+                        return res.status(400).send("That item doesn't exist!")
 
                     const reason = req.data.reason
                     if (!reason)
@@ -175,6 +175,8 @@ itemApi.post(
                                 console.error(err)
                             }
                         )
+
+                    log(`${req.auth.isAdmin ? "Admin" : "User"} '${req.auth.username}' marked item with ID '${itemID}'. Reason: ${reason}`)
                 }
             )
             .catch(
@@ -187,6 +189,40 @@ itemApi.post(
     }
 )
 
-itemApi.post("/delete/:id", (req, res) => res.sendit(req.originalUrl))
+itemApi.post(
+    "/delete/:id",
+    authHandler({ requiresAdmin: true }),
+    (req, res) => {
+        const itemID = req.params.id
+
+        Item.get(itemID)
+            .then(
+                itemExists => {
+                    if (!itemExists)
+                        return res.status(400).send("That item doesn't exist!")
+
+                    Item.delete(itemID)
+                        .then(() => res.sendit(itemExists))
+                        .catch(
+                            err => {
+                                res.status(500).send("There was an marking the item...")
+                                log(colors.red("ERROR!"), "Encountered an error while marking the item!")
+                                console.error(err)
+                            }
+                        )
+
+                    log(`Admin '${req.auth.username}' deleted item with ID '${itemID}'.`)
+                }
+
+            )
+            .catch(
+                err => {
+                    res.status(500).send("There was an deleting the item...")
+                    log(colors.red("ERROR!"), "Encountered an error while deleting the item!")
+                    console.error(err)
+                }
+            )
+    }
+)
 
 export default itemApi
