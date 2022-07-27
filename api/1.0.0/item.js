@@ -89,7 +89,7 @@ itemApi.post(
             customData
         } = req.data
 
-        const itemRequest = Item.create(
+        Item.create(
             name,
             description,
             keywords,
@@ -98,23 +98,29 @@ itemApi.post(
             itemData,
             customData
         )
+            .then(
+                item =>
+                    Item.save(item)
+                        .then(item => {
+                            res.sendit(item)
+                            log(`${req.auth.isAdmin ? "Admin" : "User"} '${req.auth.username}' created item with ID '${itemID}'.`)
+                        })
+                        .catch(err => {
+                            if (err.code === "ER_DUP_ENTRY")
+                                return res.status(500).send(`The itemID '${itemID}' is already taken!`)
 
-        if (itemRequest.status === "ERR")
-            return res.status(500).send(itemRequest.data)
-
-        const item = itemRequest.data
-
-        Item.save(item)
-            .then(item => {
-                res.sendit(item)
-                log(`${req.auth.isAdmin ? "Admin" : "User"} '${req.auth.username}' created item with ID '${itemID}'.`)
-            })
-            .catch(err => {
-                if (err.code === "ER_DUP_ENTRY")
-                    return res.status(500).send(`The itemID '${itemID}' is already taken!`)
-                res.status(500).send("Error while saving the item!")
-                console.error(err)
-            })
+                            res.status(500).send("Error while saving the item!")
+                            log(colors.red("ERROR!"), "There was an error saving an item...")
+                            console.error(err)
+                        })
+            )
+            .catch(
+                err => {
+                    res.status(500).send(err)
+                    log(colors.red("ERROR!"), "There was an error creating an item...")
+                    console.error(err)
+                }
+            )
     }
 )
 

@@ -1,7 +1,8 @@
 import { queryDB } from "../lib/database.js"
-import { Err, Ok } from "../lib/okay-error.js"
+import Keyword from "./Keyword.js"
 
 /** @typedef {import("./File").File_} File_ */
+/** @typedef {import("./Keyword.js").Keyword} Keyword */
 
 /**
  * A unique identifier for {@link Item}. (In this implementation an inventory number.)
@@ -80,7 +81,7 @@ export const ItemTypes = [
 
 const Item = {
     /**
-     * Creates an {@link Item} object.
+     * Creates a promise of an {@link Item}.
      * @param {string}   name         The name of an object. E.g. title of a book.
      * @param {string}   description  A description of the object.
      * @param {string}   keywords     Commaseparated list of keywords.
@@ -88,42 +89,56 @@ const Item = {
      * @param {ItemID}   itemID       A unique identifier for the item. (In this implementation an inventory number.)
      * @param {ItemData} itemData     The item's data. Differemt for every {@link ItemType}.
      * @param {*}        customData   Custom data.
-     * @returns {Ok|Err} A freshly created item embedded in an {@link Ok} or an error embedded in an {@link Err}.
+     * @returns {Promise<Item>} Resolves with an {@link Item} or rejects with an error.
      */
-    create: (name, description, keywords, type, itemID, itemData, customData) => {
-        // Check if name is missing.
-        if (!name)
-            return Err("'name' cannot be empty!")
+    create: (name, description, keywords, type, itemID, itemData, customData) => new Promise(
+        async (resolve, reject) => {
+            // Check if name is missing.
+            if (!name)
+                return reject("'name' cannot be empty!")
 
-        // Check if the type is valid.
-        if (!ItemTypes.includes(type))
-            return Err(`Type '${type}' is not a valid 'ItemType'!`)
+            // Check if the type is valid.
+            if (!ItemTypes.includes(type))
+                return reject(`Type '${type}' is not a valid 'ItemType'!`)
 
-        // TODO: Check if itemID is unique!
-        // NOTE: Whether or not the `ItemID` is unique is check by the `Item.save()` method...
-        // if (!isUniqueItemID(itemID))
-        //     return Err(`ItemID '${itemID}' is not unique!`)
+            // Check if keywords are valid.
+            const allKeywordsForType = (await Keyword.get([ type ])).map(keyword => keyword.word)
+            const validKeywords = keywords
+                .split(",")
+                .filter(keyword => allKeywordsForType.includes(keyword))
+                // Make sure there are no duplicates.
+                .filter((keyword, index, array) => array.indexOf(keyword) === index)
+                // Sort in alphabetical order.
+                .sort((a, b) => a.localeCompare(b))
+                // Join back to a comma-separated string.
+                .join(",")
 
-        const now = new Date(Date.now())
+            // TODO: Check if itemID is unique!
+            // NOTE: Whether or not the `ItemID` is unique is check by the `Item.save()` method...
+            // if (!isUniqueItemID(itemID))
+            //     return Err(`ItemID '${itemID}' is not unique!`)
 
-        /** @type {Item} */
-        const item = {
-            name,
-            description,
-            keywords,
-            type,
-            itemID,
-            addedAt: now,
-            updatedAt: now,
-            itemData: itemData ?? {},
-            customData: customData ?? {},
-            isExpired: false,
-            expireReason: "",
-            itemFiles: []
+            const now = new Date(Date.now())
+
+            /** @type {Item} */
+            const item = {
+                name,
+                description,
+                keywords: validKeywords,
+                type,
+                itemID,
+                addedAt: now,
+                updatedAt: now,
+                itemData: itemData ?? {},
+                customData: customData ?? {},
+                isExpired: false,
+                expireReason: "",
+                itemFiles: []
+            }
+
+            resolve(item)
         }
-
-        return Ok(item)
-    },
+    ),
     /**
      * Gets an {@link Item} from the database.
      * @param {ItemID} itemID The {@link ItemID} of the {@link Item} to be fetched.
