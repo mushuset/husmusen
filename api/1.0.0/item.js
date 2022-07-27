@@ -16,19 +16,27 @@ const VALID_SORT_FIELDS = ["name", "relevance", "lastUpdated", "addedAt", "itemI
 itemApi.get(
     "/search",
     async (req, res) => {
-        const TYPES    = req.query.types    ?? ""
-        const FREETEXT = req.query.freetext ?? ""
-        const KEYWORDS = req.query.keywords ?? ""
-        const SORT     = req.query.sort     ?? "name"
-        const REVERSE  = req.query.reverse  ?? ""
+        const TYPES        = req.query.types        ?? ""
+        const FREETEXT     = req.query.freetext     ?? ""
+        const KEYWORDS     = req.query.keywords     ?? ""
+        const KEYWORD_MODE = req.query.keyword_mode ?? ""
+        const SORT         = req.query.sort         ?? ""
+        const REVERSE      = req.query.reverse      ?? ""
 
         const validTypes = TYPES !== "" ? TYPES.split(",").filter(type => ItemTypes.includes(type)) : ItemTypes
         if (!validTypes[0])
             return res.status(400).send("No valid types entered!")
 
         const allKeywords      = await getKeywords(validTypes)
-        const validKeywords    = KEYWORDS.split(",").filter(keyword => allKeywords.includes(keyword))
-        const keywordSearchSQL = validKeywords[0] ? `AND keywords RLIKE '(?-i)(?<=,|^)(${validKeywords.join("|")})(?=,|$)'` : ""
+        const validKeywords    = KEYWORDS
+            .split(",")
+            .filter(keyword => allKeywords.includes(keyword))
+            .sort((a, b) => a.localeCompare(b))
+
+        const keywordMode      = KEYWORD_MODE.toUpperCase() === "AND" ? "AND" : "OR"
+        const keywordSearchSQL = keywordMode === "AND"
+            ? (validKeywords[0] ? `AND keywords RLIKE '(?-i)(?<=,|^)(${validKeywords.join("(.*,|)")})(?=,|$)'` : "")
+            : (validKeywords[0] ? `AND keywords RLIKE '(?-i)(?<=,|^)(${validKeywords.join("|")})(?=,|$)'` : "")
 
         const sortSearchSQL    = `${VALID_SORT_FIELDS.includes(SORT) ? SORT : "name"}`
         const reverseSearchSQL = REVERSE === "1" || REVERSE === "on" || REVERSE === "true" ? "DESC" : "ASC"
