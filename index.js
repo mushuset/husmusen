@@ -43,7 +43,14 @@ const appRateLimiter = rateLimit({
     legacyHeaders: false
 })
 
-husmusen.use("/api",   api)
+const apiRateLimiter = rateLimit({
+    windowMs: 1000,
+    max: 5,
+    standardHeaders: true,
+    legacyHeaders: false
+})
+
+husmusen.use("/api",   apiRateLimiter, api)
 husmusen.get('/app',   appRateLimiter, url2njk)
 husmusen.get('/app/*', appRateLimiter, url2njk)
 
