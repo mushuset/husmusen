@@ -33,24 +33,35 @@ itemApi.get(
             .filter(keyword => allKeywords.includes(keyword))
             .sort((a, b) => a.localeCompare(b))
 
+        // FIXME: It might be possible to do these search via FULLTEXT indexes using `IN BOOLEAN MODE`...
         const keywordMode      = KEYWORD_MODE.toUpperCase() === "AND" ? "AND" : "OR"
         const keywordSearchSQL = keywordMode === "AND"
             ? (validKeywords[0] ? `AND keywords RLIKE '(?-i)(?<=,|^)(${validKeywords.join("(.*,|)")})(?=,|$)'` : "")
             : (validKeywords[0] ? `AND keywords RLIKE '(?-i)(?<=,|^)(${validKeywords.join("|")})(?=,|$)'` : "")
 
         const sortSearchSQL    = `${VALID_SORT_FIELDS.includes(SORT) ? SORT : "name"}`
-        const reverseSearchSQL = REVERSE === "1" || REVERSE === "on" || REVERSE === "true" ? "DESC" : "ASC"
+        const reverseSearchSQL  = sortSearchSQL === "relevance"
+            ? REVERSE === "1" || REVERSE === "on" || REVERSE === "true" ? "ASC"  : "DESC"
+            : REVERSE === "1" || REVERSE === "on" || REVERSE === "true" ? "DESC" : "ASC"
+
+        const magicRelevanceFormula   = "((MATCH(name) AGAINST(:freetext IN BOOLEAN MODE) + 1) * (MATCH(description) AGAINST(:freetext IN BOOLEAN MODE) + 1) - 1) / 3"
+        const magicRelevanceSearchSQL = FREETEXT ? "AND (MATCH(name) AGAINST(:freetext IN BOOLEAN MODE) OR MATCH(description) AGAINST(:freetext IN BOOLEAN MODE))" : ""
 
         queryDB(
-            `
-                SELECT * FROM husmusen_items
-                    WHERE type IN (?)
-                    ${keywordSearchSQL}
-                    ORDER BY ${sortSearchSQL} ${reverseSearchSQL}
-            `,
-            [
+            {
+                namedPlaceholders: true,
+                sql:`
+                    SELECT *, (${magicRelevanceFormula}) AS relevance FROM husmusen_items
+                        WHERE type IN (:validTypes)
+                        ${keywordSearchSQL}
+                        ${magicRelevanceSearchSQL}
+                        ORDER BY ${sortSearchSQL} ${reverseSearchSQL}
+                `
+            },
+            {
+                freetext: FREETEXT,
                 validTypes
-            ]
+            }
         ).then(
             result => res.sendit(result)
         ).catch(
