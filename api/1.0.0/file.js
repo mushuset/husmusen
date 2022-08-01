@@ -2,6 +2,8 @@ import { Router } from "express"
 
 const fileApi = Router()
 
+// NOTHING IMPLEMENTED HERE YET!
+
 fileApi.get("/get/:id", (req, res) => res.sendit(req.originalUrl))
 fileApi.get("/info/:id", (req, res) => res.sendit(req.originalUrl))
 

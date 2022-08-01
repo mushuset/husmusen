@@ -6,6 +6,7 @@ import DBInfo from "../models/DBInfo.js"
 
 const dbInfoApi = Router()
 
+// Get all DBInfo
 dbInfoApi.get(
     "/",
     (req, res) => DBInfo.get()
@@ -13,6 +14,7 @@ dbInfoApi.get(
         .catch(err => res.status(500).send(err))
 )
 
+// Get only the latest supported version.
 dbInfoApi.get(
     "/version",
     (req, res) => DBInfo.get()
@@ -20,6 +22,8 @@ dbInfoApi.get(
         .catch(err => res.status(500).send(err))
 )
 
+// Get all supported versions...
+// All supported versions should be accesible under /api/<VERSION>/...
 dbInfoApi.get(
     "/versions",
     (req, res) => DBInfo.get()
@@ -27,6 +31,7 @@ dbInfoApi.get(
         .catch(err => res.status(500).send(err))
 )
 
+// Let admins edit the DBInfo
 // TODO: Should verify the input.
 dbInfoApi.post(
     "/",

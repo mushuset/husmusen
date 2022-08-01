@@ -79,14 +79,21 @@ const Keyword = {
     ),
     /**
      * Saves a new keyword list.
-     * @param {string} keywordTextData The text data of all keywords. Each line is one keyword formatted: `<TYPE> <WORD> <DESCRIPTION>`
+     * @param {Array<Keyword>} keywords An array of keywords...
      * @returns {Promise}
      */
-    save: keywordTextData => new Promise(
+    save: keywords => new Promise(
         (resolve, reject) => {
-            const filteredKeywordTextData = keywordTextData
-                .split("\n")
+            const keywordsTextData = keywords
+                .map(keyword => `${keyword.type}: ${keyword.word}: ${keyword.description}`)
+                // Sort the keywords alphabetically...
+                .sort((a, b) => a.localeCompare(b))
+
+            const filteredKeywordTextData = keywordsTextData
+                // Discard invalid lines...
                 .filter(line => line.match(/^\w+: .+: .+$/))
+                // Make sure all lines are unique...
+                .filter((line, index, array) => array.indexOf(line) === index)
                 .join("\n")
 
             writeFile("./data/keywords.txt", filteredKeywordTextData)

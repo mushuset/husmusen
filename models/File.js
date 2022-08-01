@@ -29,6 +29,7 @@ const File = {
      */
     create: (name, type, license, relatedItem) => new Promise(
         (resolve, reject) => {
+            // Make sure the properties are defined...
             if (!name)
                 return reject("'name' cannot be empty!")
 

@@ -34,6 +34,10 @@ const DBINFO_FILE_PATH = "./data/db_info.yml"
  */
 let dbinfoCache = null
 
+/**
+ * Caches DBInfo read from `./data/db_info.yml` to {@link dbinfoCache}
+ * @returns {void}
+ */
 function cacheDBInfo() {
     return new Promise(
         async (resolve, reject) => {
@@ -50,14 +54,25 @@ function cacheDBInfo() {
 }
 
 const DBInfo = {
+    /**
+     * Gets the DBInfo...
+     * @returns {DBInfo}
+     */
     get: () => new Promise(
         async (resolve, reject) => {
+            // If there is no cache, generate it...
             if (!dbinfoCache)
                 await cacheDBInfo().catch(reject)
 
             resolve(dbinfoCache)
         }
     ),
+    /**
+     * Saves new DBInfo...
+     * @param {DBInfo} DBInfo The new DBInfo
+     * @returns {Promise}
+     */
+    // TODO: This should probably be checked so it is valid!
     save: DBInfo => new Promise(
         (resolve, reject) => {
             const DBInfoYAML = YAML.stringify(DBInfo)

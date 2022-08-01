@@ -8,6 +8,7 @@ import colors from "colors"
 const keywordApi = Router()
 const log = getLogger("Database |", "magenta")
 
+// Gets all keywords for all types.
 keywordApi.get(
     "/",
     (req, res) => {
@@ -21,6 +22,9 @@ keywordApi.get(
     }
 )
 
+// Gets all keywords for all the specified types.
+// Types are specified like this: /api/1.0.0/keyword/Type1,Type2,Type3
+// AKA the types are comma-separated in the URL.
 keywordApi.get(
     "/:types",
     (req, res) => {
@@ -40,6 +44,7 @@ keywordApi.get(
     }
 )
 
+// Allows an admin to configure keywords...
 keywordApi.post(
     "/",
     authHandler({ requiresAdmin: true }),
@@ -49,13 +54,9 @@ keywordApi.post(
          */
         const keywords = req.data
 
-        const keywordsTextData = keywords
-            .map(keyword => `${keyword.type}: ${keyword.word}: ${keyword.description}`)
-            .filter((a, b) => a.localeCompare(b))
-            .join("\n")
-
-        Keyword.save(keywordsTextData)
-            .then(() => res.sendit(keywords))
+        Keyword.save(keywords)
+            .then(() => Keyword.get(ItemTypes))
+            .then(keywords => res.sendit(keywords))
             .catch(err => {
                 res.status(500).send("There was an error saving the keywords...")
                 log(colors.red("ERROR!"), "Encountered an error while saving keywords!")

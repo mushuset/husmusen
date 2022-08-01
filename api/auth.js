@@ -28,7 +28,7 @@ authApi.post(
             true
         ).catch(
             err => {
-                log(colors.red("ERROR!", "Encountered an error."))
+                log.error("Encountered an error.")
                 console.error(err)
                 res.status(500).send("There was an error looking up the user!")
             }
@@ -57,7 +57,7 @@ authApi.post(
             validUntil: new Date(Date.now() + FOUR_HOURS_IN_MS)
         })
 
-        log(`${user.isAdmin ? "Admin" : "User"} '${username}' logged in!`)
+        log.write(`${user.isAdmin ? "Admin" : "User"} '${username}' logged in!`)
     }
 )
 
@@ -91,7 +91,7 @@ authApi.post(
             true
         ).catch(
             err => {
-                log(colors.red("ERROR!", "Encountered an error."))
+                log.error("Encountered an error.")
                 console.error(err)
                 res.status(500).send("There was an while looking up if the username is taken!")
             }
@@ -100,7 +100,7 @@ authApi.post(
         if (userExists)
             return res.status(400).send("That user already exists!")
 
-        log(`Creating user '${username}'...`)
+        log.write(`Creating user '${username}'...`)
 
         const passwordHash = await argon2.hash(
             password,
@@ -117,18 +117,18 @@ authApi.post(
             [ username, passwordHash, isAdmin ? 1 : 0 ]
         ).then(
             () => {
-                log("User created!")
+                log.write("User created!")
                 res.sendit({ username, password, isAdmin })
             }
         ).catch(
             err => {
-                log(colors.red("ERROR!", "Encountered an error."))
+                log.error("Encountered an error.")
                 console.error(err)
                 res.status(500).send("There was an error saving the user!")
             }
         )
 
-        log(`Admin '${req.auth.username}' created ${isAdmin ? "admin" : "user"} '${username}'!`)
+        log.write(`Admin '${req.auth.username}' created ${isAdmin ? "admin" : "user"} '${username}'!`)
     }
 )
 
@@ -143,7 +143,7 @@ authApi.post(
 
         const userSearch = await queryDB("SELECT * FROM husmusen_users WHERE username = ?", [ req.auth.username ], true)
             .catch(err => {
-                log(colors.red("ERROR!", "Encountered an error."))
+                log.error("Encountered an error.")
                 console.error(err)
                 res.status(500).send("There was an error looking up the user!")
             })
@@ -169,7 +169,7 @@ authApi.post(
             () => res.sendit({ username: req.auth.username, password: newPassword })
         ).catch(
             err => {
-                log(colors.red("ERROR!", "Encountered an error."))
+                log.error("Encountered an error.")
                 console.error(err)
                 res.status(500).send("There was an error saving your new password!")
             }
@@ -190,11 +190,11 @@ authApi.post(
         ).then(
             () => {
                 res.sendit({ username: req.params.username })
-            log(`Admin '${req.auth.username}' deleted the user '${req.params.username}'!`)
+            log.write(`Admin '${req.auth.username}' deleted the user '${req.params.username}'!`)
             }
         ).catch(
             err => {
-                log(colors.red("ERROR!", "Encountered an error."))
+                log.error("Encountered an error.")
                 console.error(err)
                 res.status(500).send("There was an error deleting that user!")
             }
@@ -204,7 +204,7 @@ authApi.post(
 // NOTE: This should only ever be active in DEVELOPMENT, NEVER IN PRODUCTION!
 // This makes it so that you can easily create an initial admin, that can then manage users!
 if (process.env.DEBUG === "true") {
-    log(colors.yellow("WARNING!"), "Enabling debug creation of admin users on '/api/auth/debug_admin_creation'!")
+    log.write(colors.yellow("WARNING!"), "Enabling debug creation of admin users on '/api/auth/debug_admin_creation'!")
     authApi.post(
         "/debug_admin_creation",
         async (req, res) =>{
@@ -228,7 +228,7 @@ if (process.env.DEBUG === "true") {
             if (userExists)
                 return res.status(400).send("That user already exists!")
 
-            log(`Creating user '${username}'...`)
+            log.write(`Creating user '${username}'...`)
 
             const passwordHash = await argon2.hash(
                 password,
@@ -245,18 +245,18 @@ if (process.env.DEBUG === "true") {
                 [ username, passwordHash ]
             ).then(
                 () => {
-                    log("User created!")
+                    log.write("User created!")
                     res.sendit({ username, password, isAdmin: true })
                 }
             ).catch(
                 err => {
-                    log(colors.red("ERROR!", "Encountered an error."))
+                    log.error("Encountered an error.")
                     console.error(err)
                     res.status(500).send("There was an error saving the user!")
                 }
             )
 
-            log(`Forced the creation of admin '${username}' via '/api/auth/debug_admin_creation'!`)
+            log.write(`Forced the creation of admin '${username}' via '/api/auth/debug_admin_creation'!`)
         }
     )
 }

@@ -113,11 +113,6 @@ const Item = {
                 // Join back to a comma-separated string.
                 .join(",")
 
-            // TODO: Check if itemID is unique!
-            // NOTE: Whether or not the `ItemID` is unique is check by the `Item.save()` method...
-            // if (!isUniqueItemID(itemID))
-            //     return Err(`ItemID '${itemID}' is not unique!`)
-
             const now = new Date(Date.now())
 
             /** @type {Item} */
@@ -209,12 +204,8 @@ const Item = {
      * @returns
      */
     update: (itemID, changedData) => {
-        try {
-            // update item
-            return Ok("newItem")
-        } catch (error) {
-            return Err(error)
-        }
+        // NOT IMPLEMETED!
+        return { itemID, changedData }
     },
     /**
      * Marks an {@link Item} as expired.
