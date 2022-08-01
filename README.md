@@ -73,7 +73,7 @@ Here is a description of all the variables:
 | `DB_NAME`      | The name of the database on the MariaDB server. |
 | `TOKEN_SECRET` | A secretfor signing API/access tokens with.     |
 
-**NOTE:** I plan to later on let this implementation generate a random (new) `TOKEN_SECRET` on every startup.
+**NOTE:** `TOKEN_SECRET` should only be set in development environments, so that you don't have to get a new one every time the server restarts. In production it should not be set. The server will generate its own secret.
 
 ### 5. Start the Husmusen server
 #### First-time setup

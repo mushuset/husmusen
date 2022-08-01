@@ -5,6 +5,7 @@ import { queryDB } from "../lib/database.js"
 import colors from "colors"
 import jwt from "jsonwebtoken"
 import authHandler from "../lib/authHandler.js"
+import { SECRET } from "../lib/authHandler.js"
 
 const FOUR_HOURS_IN_MS = 4 * 60 * 60 * 1000
 
@@ -46,7 +47,7 @@ authApi.post(
                 username,
                 isAdmin: user.isAdmin
             },
-            process.env.TOKEN_SECRET ?? "SUPER SECRET", // TODO: Could be randomly generated each time the server starts.
+            SECRET,
             {
                 expiresIn: "4h"
             }
