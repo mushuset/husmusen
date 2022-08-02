@@ -4,6 +4,7 @@ import Keyword from "../../models/Keyword.js"
 import authHandler from "../../lib/authHandler.js"
 import getLogger from "../../lib/log.js"
 import colors from "colors"
+import HusmusenError from "../../models/Error.js"
 
 const keywordApi = Router()
 const log = getLogger("Database |", "magenta")
@@ -15,7 +16,7 @@ keywordApi.get(
         Keyword.get(ItemTypes)
             .then(keywords => res.sendit(keywords))
             .catch(err => {
-                res.status(500).send("There was an error getting the keywords...")
+                res.failit(HusmusenError(500, "ERR_UNKNOWN_ERROR", "There was an error getting the keywords..."))
                 log(colors.red("ERROR!"), "Encountered an error while getting the keywords!")
                 console.error(err)
             })
@@ -32,12 +33,12 @@ keywordApi.get(
         const validTypes = types.filter(type => ItemTypes.includes(type))
 
         if (!validTypes[0])
-            return res.status(400).send("You included no valid types! Please use one of the following: " + ItemTypes.join(", "))
+            return res.failit(HusmusenError(400, "ERR_MISSING_PARAMETER", "You included no valid types! Please use one of the following: " + ItemTypes.join(", ")))
 
         Keyword.get(validTypes)
             .then(keywords => res.sendit(keywords))
             .catch(err => {
-                res.status(500).send("There was an error getting the keywords...")
+                res.failit(HusmusenError(500, "ERR_UNKNOWN_ERROR", "There was an error getting the keywords..."))
                 log(colors.red("ERROR!"), "Encountered an error while getting keywords!")
                 console.error(err)
             })
@@ -58,7 +59,7 @@ keywordApi.post(
             .then(() => Keyword.get(ItemTypes))
             .then(keywords => res.sendit(keywords))
             .catch(err => {
-                res.status(500).send("There was an error saving the keywords...")
+                res.failit(HusmusenError(500, "ERR_UNKNOWN_ERROR", "There was an error saving the keywords..."))
                 log(colors.red("ERROR!"), "Encountered an error while saving keywords!")
                 console.error(err)
             })

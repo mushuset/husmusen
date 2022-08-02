@@ -6,6 +6,7 @@ import { queryDB } from "../../lib/database.js"
 import colors from "colors"
 import { ItemTypes } from "../../models/Item.js"
 import Keyword from "../../models/Keyword.js"
+import HusmusenError from "../../models/Error.js"
 
 const itemApi = Router()
 const log = getLogger("Database |", "magenta")
@@ -85,7 +86,7 @@ itemApi.get(
             result => res.sendit(result)
         ).catch(
             err => {
-                res.status(500).send("Encountered an error while searching the database!")
+                res.failit(HusmusenError(500, "ERR_DATABASE_ERROR", "Encountered an error while searching the database!"))
                 log(colors.red("ERROR!"), "Encountered an error while searching the database!")
                 console.error(err)
             }
@@ -106,9 +107,9 @@ itemApi.get(
             .then(item => res.sendit(item))
             .catch(err => {
                 if (err === "NO_EXISTS")
-                    return res.status(404).send(`There exists no item with ItemID '${sanitisedItemID}'!`)
+                    return res.failit(HusmusenError(404, "ERR_OBJECT_NOT_FOUND", `There exists no item with ItemID '${sanitisedItemID}'!`))
 
-                res.status(500).send(`There was an error while getting item with ItemID '${sanitisedItemID}'!`)
+                res.failit(HusmusenError(500, "ERR_DATABASE_ERROR", `There was an error while getting item with ItemID '${sanitisedItemID}'!`))
                 log(colors.red("ERROR!"), "Encountered an error while getting the item!")
                 console.error(err)
             })
@@ -151,16 +152,16 @@ itemApi.post(
                         // If errors are encountered, handle them:
                         .catch(err => {
                             if (err.code === "ER_DUP_ENTRY")
-                                return res.status(500).send(`The itemID '${itemID}' is already taken!`)
+                                return res.failit(HusmusenError(500, "ERR_ALREADY_EXISTS",`The itemID '${itemID}' is already taken!`))
 
-                            res.status(500).send("Error while saving the item!")
+                            res.failit(HusmusenError(500, "ERR_DATABASE_ERROR", "Error while saving the item!"))
                             log(colors.red("ERROR!"), "There was an error saving an item...")
                             console.error(err)
                         })
             )
             .catch(
                 err => {
-                    res.status(500).send(err)
+                    res.failit(HusmusenError(500, "ERR_DATABASE_ERROR", err))
                     log(colors.red("ERROR!"), "There was an error creating an item...")
                     console.error(err)
                 }
@@ -199,7 +200,7 @@ itemApi.post(
                             })
                         .catch(
                             err => {
-                                res.status(500).send("There was an marking the item...")
+                                res.failit(HusmusenError(500, "ERR_DATABASE_ERROR", "There was an marking the item..."))
                                 log(colors.red("ERROR!"), "Encountered an error while marking the item!")
                                 console.error(err)
                             }
@@ -208,7 +209,7 @@ itemApi.post(
             )
             .catch(
                 err => {
-                    res.status(500).send("There was an marking the item...")
+                    res.failit(HusmusenError(500, "ERR_DATABASE_ERROR", "There was an marking the item..."))
                     log(colors.red("ERROR!"), "Encountered an error while marking the item!")
                     console.error(err)
                 }
@@ -228,7 +229,7 @@ itemApi.post(
                 itemInDatabase => {
                     // Make sure the item exists
                     if (!itemInDatabase)
-                        return res.status(400).send("That item doesn't exist!")
+                        return res.failit(HusmusenError(400, "ERR_OBJECT_NOT_FOUND", "That item doesn't exist!"))
 
                     // Delete it and handle errors.
                     Item.delete(itemID)
@@ -240,7 +241,7 @@ itemApi.post(
                         )
                         .catch(
                             err => {
-                                res.status(500).send("There was an marking the item...")
+                                res.failit(HusmusenError(500, "ERR_DATABASE_ERROR", "There was an marking the item..."))
                                 log(colors.red("ERROR!"), "Encountered an error while marking the item!")
                                 console.error(err)
                             }
@@ -250,7 +251,7 @@ itemApi.post(
             )
             .catch(
                 err => {
-                    res.status(500).send("There was an deleting the item...")
+                    res.failit(HusmusenError(500, "ERR_DATABASE_ERROR", "There was an deleting the item..."))
                     log(colors.red("ERROR!"), "Encountered an error while deleting the item!")
                     console.error(err)
                 }

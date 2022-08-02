@@ -6,6 +6,7 @@ import colors from "colors"
 import jwt from "jsonwebtoken"
 import authHandler from "../lib/authHandler.js"
 import { SECRET } from "../lib/authHandler.js"
+import HusmusenError from "../models/Error.js"
 
 const FOUR_HOURS_IN_MS = 4 * 60 * 60 * 1000
 
@@ -18,10 +19,10 @@ authApi.post(
         const { username, password } = req.data
 
         if (!username)
-            return res.status(400).send("You must specify the username!")
+            return res.failit(HusmusenError(400, "ERR_MISSING_PARAMETER", "You must specify 'username'."))
 
         if (!password)
-            return res.status(400).send("You must specify the password!")
+            return res.failit(HusmusenError(400, "ERR_MISSING_PARAMETER", "You must specify 'password'."))
 
         const user = await queryDB(
             "SELECT * FROM husmusen_users WHERE username = ?",
@@ -31,16 +32,16 @@ authApi.post(
             err => {
                 log.error("Encountered an error.")
                 console.error(err)
-                res.status(500).send("There was an error looking up the user!")
+                res.failit(HusmusenError(500, "ERR_DATABASE_ERROR", "There was an error looking up the user!"))
             }
         )
 
         if (!user)
-            return res.status(400).send("It seems as if that user doesn't exist.")
+            return res.failit(HusmusenError(400, "ERR_USER_NOT_FOUND", "It seems as if that user doesn't exist."))
 
         const passMatches = await argon2.verify(user.password, password)
         if (!passMatches)
-            return res.status(400).send("Incorrect password.")
+            return res.failit(HusmusenError(400, "ERR_INVALID_PASSWORD", "Incorrect password."))
 
         const token = jwt.sign(
             {
@@ -75,16 +76,16 @@ authApi.post(
         const { username, password, isAdmin } = req.data
 
         if (!username)
-            return res.status(400).send("You must define a username!")
+            return res.failit(HusmusenError(400, "ERR_MISSING_PARAMETER", "You must define a username!"))
 
         if (!password)
-            return res.status(400).send("You must define a password!")
+            return res.failit(HusmusenError(400, "ERR_MISSING_PARAMETER", "You must define a password!"))
 
         if (isAdmin === undefined)
-            return res.status(400).send("You must define 'isAdmin'!")
+            return res.failit(HusmusenError(400, "ERR_MISSING_PARAMETER", "You must define 'isAdmin'!"))
 
         if (!username.match(/^\w{0,32}$/))
-            return res.status(400).send("Username can only be A-Z, a-z, 0-9, and underscore (_)! It must be no more than 32 characters!")
+            return res.failit(HusmusenError(400, "ERR_INVALID_PARAMETER", "Username can only be A-Z, a-z, 0-9, and underscore (_)! It must be no more than 32 characters!"))
 
         const userExists = await queryDB(
             "SELECT username FROM husmusen_users WHERE username = ?",
@@ -94,12 +95,13 @@ authApi.post(
             err => {
                 log.error("Encountered an error.")
                 console.error(err)
-                res.status(500).send("There was an while looking up if the username is taken!")
+                res.failit(HusmusenError(500, "ERR_DATABASE_ERROR", "There was an while looking up if the username is taken!"))
             }
         )
 
         if (userExists)
-            return res.status(400).send("That user already exists!")
+            return res.failit(HusmusenError(400, "ERR_ALREADY_EXISTS", "There was an while looking up if the username is taken!"))
+
 
         log.write(`Creating user '${username}'...`)
 
@@ -118,18 +120,16 @@ authApi.post(
             [ username, passwordHash, isAdmin ? 1 : 0 ]
         ).then(
             () => {
-                log.write("User created!")
+                log.write(`Admin '${req.auth.username}' created ${isAdmin ? "admin" : "user"} '${username}'!`)
                 res.sendit({ username, password, isAdmin })
             }
         ).catch(
             err => {
                 log.error("Encountered an error.")
                 console.error(err)
-                res.status(500).send("There was an error saving the user!")
+                res.failit(HusmusenError(500, "ERR_DATABASE_ERROR", "There was an error saving the user!"))
             }
         )
-
-        log.write(`Admin '${req.auth.username}' created ${isAdmin ? "admin" : "user"} '${username}'!`)
     }
 )
 
@@ -140,18 +140,18 @@ authApi.post(
         const { currentPassword, newPassword } = req.data
 
         if (!currentPassword || !newPassword)
-            return res.status(400).send("You need to specify both 'currentPassword' and 'newPassword'!")
+            return res.failit(HusmusenError(400, "ERR_MISSING_PARAMETERS", "You need to specify both 'currentPassword' and 'newPassword'!"))
 
         const userSearch = await queryDB("SELECT * FROM husmusen_users WHERE username = ?", [ req.auth.username ], true)
             .catch(err => {
                 log.error("Encountered an error.")
                 console.error(err)
-                res.status(500).send("There was an error looking up the user!")
+                res.status(HusmusenError(500, "ERR_DATABASE_ERROR", "There was an error looking up the user!"))
             })
 
         const passwordMatches = await argon2.verify(userSearch.password, currentPassword)
         if (!passwordMatches)
-            return res.status(401).send("Your 'currentPassword' is incorrect!")
+            return res.failit(HusmusenError(401, "ERR_INVALID_PASSWORD", "Your 'currentPassword' is incorrect!"))
 
         const newPasswordHAsh = await argon2.hash(
             newPassword,
@@ -172,7 +172,7 @@ authApi.post(
             err => {
                 log.error("Encountered an error.")
                 console.error(err)
-                res.status(500).send("There was an error saving your new password!")
+                res.failit(HusmusenError(500, "ERR_DATABASE_ERROR", "There was an error saving your new password!"))
             }
         )
     }
@@ -183,7 +183,7 @@ authApi.post(
     authHandler({ requiresAdmin: true }),
     (req, res) => {
         if (req.params.username === req.auth.username)
-            return res.send(402).send("You cannot delete yourself!")
+            return res.failit(HusmusenError(402, "ERR_FORBIDDEN_ACTION","You cannot delete yourself!"))
 
         queryDB(
             "DELETE FROM husmusen_users WHERE username = ?",
@@ -197,7 +197,7 @@ authApi.post(
             err => {
                 log.error("Encountered an error.")
                 console.error(err)
-                res.status(500).send("There was an error deleting that user!")
+                res.failit(HusmusenError(500, "ERR_DATABASE_ERROR", "There was an error deleting that user!"))
             }
         )
     })
@@ -212,13 +212,13 @@ if (process.env.DEBUG === "true") {
             const { username, password } = req.data
 
             if (!username)
-                return res.status(400).send("You must define a username!")
+                return res.failit(HusmusenError(400, "ERR_MISSING_PARAMETER","You must define a username!"))
 
             if (!password)
-                return res.status(400).send("You must define a password!")
+                return res.failit(HusmusenError(400, "ERR_MISSING_PARAMETER","You must define a password!"))
 
             if (!username.match(/^\w{0,32}$/))
-                return res.status(400).send("Username can only be A-Z, a-z, 0-9, and underscore (_)! It must be no more than 32 characters!")
+                return res.failit(HusmusenError(400, "ERR_INVALID_PARAMETER","Username can only be A-Z, a-z, 0-9, and underscore (_)! It must be no more than 32 characters!"))
 
             const userExists = await queryDB(
                 "SELECT username FROM husmusen_users WHERE username = ?",
@@ -227,9 +227,9 @@ if (process.env.DEBUG === "true") {
             )
 
             if (userExists)
-                return res.status(400).send("That user already exists!")
+                return res.failit(HusmusenError(400, "ERR_ALREADY_EXISTS", "That user already exists!"))
 
-            log.write(`Creating user '${username}'...`)
+            log.write(`DEBUG: Creating user '${username}'...`)
 
             const passwordHash = await argon2.hash(
                 password,
@@ -253,7 +253,7 @@ if (process.env.DEBUG === "true") {
                 err => {
                     log.error("Encountered an error.")
                     console.error(err)
-                    res.status(500).send("There was an error saving the user!")
+                    res.failit(HusmusenError(500, "ERR_DATABASE_ERROR", "There was an error saving the user!"))
                 }
             )
 
