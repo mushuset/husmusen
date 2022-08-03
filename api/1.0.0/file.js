@@ -16,7 +16,7 @@ fileApi.get(
     (req, res) => {
         // Make sure you can't traverse the filesystem with '..' and '/'.
         const sanitisedItemID = req.params.id
-            .replace(/[\.\/]+/g, "")
+            .replace(/[\.\/\\]+/g, "")
 
         // Check if the file exists. If it doesn't, send an error.
         if (!existsSync(`./data/files/${sanitisedItemID}`))
