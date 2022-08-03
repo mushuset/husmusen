@@ -99,20 +99,52 @@ const File = {
             ).then(() => resolve(file)).catch(reject)
         }
     ),
-    saveFile: (fileDataBuffer, fileID, mimeType) => new Promise(
-        (resolve, reject) => {
-            writeFile(`./data/files/${fileID}.${mimeType.replace(/^.*\//, "")}`, fileDataBuffer)
-                .then(resolve)
-                .catch(reject)
-        }
-    ),
     /**
      * **NOT IMPLEMENTED!!!** Updates a file in the database with new metadata information.
      * @param {FileID} fileID The {@link FileID} of the file to change
      * @param {File_} changedData The new file data.
      * @returns {Promise<File_>}
      */
-    update: (fileID, changedData) => new Promise(r => r()),
+    update: (fileID, name, type, license, relatedItem) => new Promise(
+        (resolve, reject) => {
+            if (!name)
+                return reject("'name' cannot be empty!")
+
+            if (!type)
+                return reject("'type' cannot be empty!")
+
+            if (!license)
+                return reject("You must specify a license!")
+
+            if (!license)
+                return reject("You must specify a 'relatedItem'!")
+
+            const now = new Date(Date.now())
+
+            queryDB(
+                `
+                    UPDATE husmusen_files SET
+                        name,
+                        type,
+                        license,
+                        updatedAt,
+                        relatedItem
+                    WHERE fileID = ?
+                `,
+                [
+                    name,
+                    type,
+                    license,
+                    now,
+                    relatedItem,
+                    fileID
+                ]
+            )
+                .then(() => File.get(fileID))
+                .then(resolve)
+                .catch(reject)
+        }
+    ),
     /**
      * Delets a file from the database
      * @param {FileID} fileID The {@link FileID} of the file to delete.
