@@ -87,7 +87,7 @@ itemApi.get(
         ).catch(
             err => {
                 res.failit(HusmusenError(500, "ERR_DATABASE_ERROR", "Encountered an error while searching the database!"))
-                log(colors.red("ERROR!"), "Encountered an error while searching the database!")
+                log.error("Encountered an error while searching the database!")
                 console.error(err)
             }
         )
@@ -110,7 +110,7 @@ itemApi.get(
                     return res.failit(HusmusenError(404, "ERR_OBJECT_NOT_FOUND", `There exists no item with ItemID '${sanitisedItemID}'!`))
 
                 res.failit(HusmusenError(500, "ERR_DATABASE_ERROR", `There was an error while getting item with ItemID '${sanitisedItemID}'!`))
-                log(colors.red("ERROR!"), "Encountered an error while getting the item!")
+                log.error("Encountered an error while getting the item!")
                 console.error(err)
             })
     }
@@ -146,7 +146,7 @@ itemApi.post(
                 Item.save(item)
                     .then(item => {
                         res.sendit(item)
-                        log(`${req.auth.isAdmin ? "Admin" : "User"} '${req.auth.username}' created item with ID '${itemID}'.`)
+                        log.write(`${req.auth.isAdmin ? "Admin" : "User"} '${req.auth.username}' created item with ID '${itemID}'.`)
                     })
                     // If errors are encountered, handle them:
                     .catch(err => {
@@ -154,13 +154,13 @@ itemApi.post(
                             return res.failit(HusmusenError(500, "ERR_ALREADY_EXISTS",`The itemID '${itemID}' is already taken!`))
 
                         res.failit(HusmusenError(500, "ERR_DATABASE_ERROR", "Error while saving the item!"))
-                        log(colors.red("ERROR!"), "There was an error saving an item...")
+                        log.error("There was an error saving an item...")
                         console.error(err)
                     })
         ).catch(
             err => {
                 res.failit(HusmusenError(500, "ERR_DATABASE_ERROR", err))
-                log(colors.red("ERROR!"), "There was an error creating an item...")
+                log.error("There was an error creating an item...")
                 console.error(err)
             }
         )
@@ -194,12 +194,12 @@ itemApi.post(
         ).then(
             item => {
                 res.sendit(item)
-                log(`${req.auth.isAdmin ? "Admin" : "User"} '${req.auth.username}' edited item with ID '${itemID}'.`)
+                log.write(`${req.auth.isAdmin ? "Admin" : "User"} '${req.auth.username}' edited item with ID '${itemID}'.`)
             }
         ).catch(
             err => {
                 res.failit(HusmusenError(500, "ERR_UNKNOWN_ERROR", err))
-                log(colors.red("ERROR!"), "Encountered an error while editing an item!")
+                log.error("Encountered an error while editing an item!")
                 console.error(err)
             }
         )
@@ -230,12 +230,12 @@ itemApi.post(
                         .then(
                             () => {
                                 res.sendit(Object.assign(itemInDatabase, { isExpired: 1, expireReason: reason }))
-                                log(`${req.auth.isAdmin ? "Admin" : "User"} '${req.auth.username}' marked item with ID '${itemID}'. Reason: ${reason}`)
+                                log.write(`${req.auth.isAdmin ? "Admin" : "User"} '${req.auth.username}' marked item with ID '${itemID}'. Reason: ${reason}`)
                             })
                         .catch(
                             err => {
                                 res.failit(HusmusenError(500, "ERR_DATABASE_ERROR", "There was an marking the item..."))
-                                log(colors.red("ERROR!"), "Encountered an error while marking the item!")
+                                log.error("Encountered an error while marking the item!")
                                 console.error(err)
                             }
                         )
@@ -244,7 +244,7 @@ itemApi.post(
             .catch(
                 err => {
                     res.failit(HusmusenError(500, "ERR_DATABASE_ERROR", "There was an marking the item..."))
-                    log(colors.red("ERROR!"), "Encountered an error while marking the item!")
+                    log.error("Encountered an error while marking the item!")
                     console.error(err)
                 }
             )
@@ -270,13 +270,13 @@ itemApi.post(
                         .then(
                             () => {
                                 res.sendit(itemInDatabase)
-                                log(`Admin '${req.auth.username}' deleted item with ID '${itemID}'.`)
+                                log.write(`Admin '${req.auth.username}' deleted item with ID '${itemID}'.`)
                             }
                         )
                         .catch(
                             err => {
-                                res.failit(HusmusenError(500, "ERR_DATABASE_ERROR", "There was an marking the item..."))
-                                log(colors.red("ERROR!"), "Encountered an error while marking the item!")
+                                res.failit(HusmusenError(500, "ERR_DATABASE_ERROR", "There was an error deleting the item..."))
+                            log.error("Encountered an error while deleting the item!")
                                 console.error(err)
                             }
                         )
@@ -286,7 +286,7 @@ itemApi.post(
             .catch(
                 err => {
                     res.failit(HusmusenError(500, "ERR_DATABASE_ERROR", "There was an deleting the item..."))
-                    log(colors.red("ERROR!"), "Encountered an error while deleting the item!")
+                    log.error("Encountered an error while deleting the item!")
                     console.error(err)
                 }
             )
