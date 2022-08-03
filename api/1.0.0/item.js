@@ -140,37 +140,71 @@ itemApi.post(
             itemID,
             itemData,
             customData
-        )
-            .then(
-                item =>
-                    // When the Item is created, it must be saved.
-                    Item.save(item)
-                        .then(item => {
-                            res.sendit(item)
-                            log(`${req.auth.isAdmin ? "Admin" : "User"} '${req.auth.username}' created item with ID '${itemID}'.`)
-                        })
-                        // If errors are encountered, handle them:
-                        .catch(err => {
-                            if (err.code === "ER_DUP_ENTRY")
-                                return res.failit(HusmusenError(500, "ERR_ALREADY_EXISTS",`The itemID '${itemID}' is already taken!`))
+        ).then(
+            item =>
+                // When the Item is created, it must be saved.
+                Item.save(item)
+                    .then(item => {
+                        res.sendit(item)
+                        log(`${req.auth.isAdmin ? "Admin" : "User"} '${req.auth.username}' created item with ID '${itemID}'.`)
+                    })
+                    // If errors are encountered, handle them:
+                    .catch(err => {
+                        if (err.code === "ER_DUP_ENTRY")
+                            return res.failit(HusmusenError(500, "ERR_ALREADY_EXISTS",`The itemID '${itemID}' is already taken!`))
 
-                            res.failit(HusmusenError(500, "ERR_DATABASE_ERROR", "Error while saving the item!"))
-                            log(colors.red("ERROR!"), "There was an error saving an item...")
-                            console.error(err)
-                        })
-            )
-            .catch(
-                err => {
-                    res.failit(HusmusenError(500, "ERR_DATABASE_ERROR", err))
-                    log(colors.red("ERROR!"), "There was an error creating an item...")
-                    console.error(err)
-                }
-            )
+                        res.failit(HusmusenError(500, "ERR_DATABASE_ERROR", "Error while saving the item!"))
+                        log(colors.red("ERROR!"), "There was an error saving an item...")
+                        console.error(err)
+                    })
+        ).catch(
+            err => {
+                res.failit(HusmusenError(500, "ERR_DATABASE_ERROR", err))
+                log(colors.red("ERROR!"), "There was an error creating an item...")
+                console.error(err)
+            }
+        )
     }
 )
 
 // Let users and admins edit Items.
-itemApi.post("/edit/:id", (req, res) => res.sendit("NOT IMPLEMENTED!"))
+itemApi.post(
+    "/edit/:id",
+    authHandler({ requiresAdmin: false }),
+    (req, res) => {
+        const {
+            name,
+            description,
+            keywords,
+            type,
+            itemID,
+            itemData,
+            customData
+        } = req.data
+
+        Item.update(
+            req.params.id,
+            name,
+            description,
+            keywords,
+            type,
+            itemID,
+            itemData,
+            customData
+        ).then(
+            item => {
+                res.sendit(item)
+                log(`${req.auth.isAdmin ? "Admin" : "User"} '${req.auth.username}' edited item with ID '${itemID}'.`)
+            }
+        ).catch(
+            err => {
+                res.failit(HusmusenError(500, "ERR_UNKNOWN_ERROR", err))
+                log(colors.red("ERROR!"), "Encountered an error while editing an item!")
+                console.error(err)
+            }
+        )
+    }
+)
 
 // Let users and admins mark Items as expired.
 itemApi.post(

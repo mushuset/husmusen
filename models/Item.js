@@ -199,14 +199,77 @@ const Item = {
     ),
     /**
      * Update an {@link Item} in the database.
-     * @param {ItemID} itemID The {@link ItemID} of the {@link Item} to be updated.
-     * @param {*} changedData The data that should be changed.
-     * @returns
+     * @param {ItemID}   itemID      The {@link ItemID} of the {@link Item} to update.
+     * @param {string}   name        The new name.
+     * @param {string}   description The new description.
+     * @param {string}   keywords    The new keywords.
+     * @param {ItemType} type        The new type.
+     * @param {ItemID}   newItemID   The new {@link ItemID}
+     * @param {object}   itemData    The new itemData.
+     * @param {*}        customData  The new customData.
+     * @returns {Promise<Item>} A promise containing the new {@link Item}.
      */
-    update: (itemID, changedData) => {
-        // NOT IMPLEMETED!
-        return { itemID, changedData }
-    },
+    update: (itemID, name, description, keywords, type, newItemID, itemData, customData) => new Promise(
+        async (resolve, reject) => {
+            // Check if the item exists.
+            const itemInDatabase = await Item.get(itemID).catch(reject)
+            if (!itemInDatabase)
+                return reject("Item doesn't exist!")
+
+            // Check if name is missing.
+            if (!name)
+                return reject("'name' cannot be empty!")
+
+            // Check if the type is valid.
+            if (!ItemTypes.includes(type))
+                return reject(`Type '${type}' is not a valid 'ItemType'!`)
+
+            // Check if keywords are valid.
+            const allKeywordsForType = (await Keyword.get([ type ]).catch(reject)).map(keyword => keyword.word)
+            const validKeywords = keywords
+                .split(",")
+                .filter(keyword => allKeywordsForType.includes(keyword))
+                // Make sure there are no duplicates.
+                .filter((keyword, index, array) => array.indexOf(keyword) === index)
+                // Sort in alphabetical order.
+                .sort((a, b) => a.localeCompare(b))
+                // Join back to a comma-separated string.
+                .join(",")
+
+            const now = new Date(Date.now())
+
+            queryDB(
+                `
+                    UPDATE husmusen_items SET
+                        name = ?,
+                        description = ?,
+                        keywords = ?,
+                        type = ?,
+                        itemID = ?,
+                        updatedAt = ?,
+                        itemData = ?,
+                        customData = ?
+                    WHERE itemID = ?
+
+                `, [
+                    name,
+                    description,
+                    validKeywords,
+                    type,
+                    newItemID,
+                    now,
+                    itemData,
+                    customData,
+                    itemID
+                ]
+            )
+            .then(
+                () => Item.get(newItemID)
+            )
+            .then(resolve)
+            .catch(reject)
+        }
+    ),
     /**
      * Marks an {@link Item} as expired.
      * @param {ItemID} itemID The {@link ItemID} of the item to mark as expired.
