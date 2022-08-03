@@ -3,7 +3,7 @@ import authHandler from "../../lib/authHandler.js"
 import File from "../../models/File.js"
 import { existsSync } from "fs"
 import HusmusenError from "../../models/Error.js"
-import path, { resolve } from "path"
+import path from "path"
 import getLogger from "../../lib/log.js"
 import { writeFile } from "fs/promises"
 
