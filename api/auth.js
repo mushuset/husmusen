@@ -1,11 +1,10 @@
-import { Router } from "express"
-import getLogger from "../lib/log.js"
 import argon2 from "argon2"
-import { queryDB } from "../lib/database.js"
 import colors from "colors"
+import { Router } from "express"
 import jwt from "jsonwebtoken"
-import authHandler from "../lib/authHandler.js"
-import { SECRET } from "../lib/authHandler.js"
+import authHandler, { SECRET } from "../lib/authHandler.js"
+import { queryDB } from "../lib/database.js"
+import getLogger from "../lib/log.js"
 import HusmusenError from "../models/Error.js"
 
 const FOUR_HOURS_IN_MS = 4 * 60 * 60 * 1000

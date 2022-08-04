@@ -1,12 +1,10 @@
 import { Router } from "express"
-import getLogger from "../../lib/log.js"
-import Item from "../../models/Item.js"
 import authHandler from "../../lib/authHandler.js"
 import { queryDB } from "../../lib/database.js"
-import colors from "colors"
-import { ItemTypes } from "../../models/Item.js"
-import Keyword from "../../models/Keyword.js"
+import getLogger from "../../lib/log.js"
 import HusmusenError from "../../models/Error.js"
+import Item, { ItemTypes } from "../../models/Item.js"
+import Keyword from "../../models/Keyword.js"
 
 const itemApi = Router()
 const log = getLogger("Database |", "magenta")

@@ -1,6 +1,6 @@
-import YAML from "yaml"
 import { existsSync } from "fs"
 import { readFile, writeFile } from "fs/promises"
+import YAML from "yaml"
 
 const DBINFO_FILE_PATH = "./data/db_info.yml"
 

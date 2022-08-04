@@ -1,10 +1,10 @@
+import colors from "colors"
 import { Router } from "express"
-import { ItemTypes } from "../../models/Item.js"
-import Keyword from "../../models/Keyword.js"
 import authHandler from "../../lib/authHandler.js"
 import getLogger from "../../lib/log.js"
-import colors from "colors"
 import HusmusenError from "../../models/Error.js"
+import { ItemTypes } from "../../models/Item.js"
+import Keyword from "../../models/Keyword.js"
 
 const keywordApi = Router()
 const log = getLogger("Database |", "magenta")

@@ -1,6 +1,6 @@
 import { Router } from "express"
-import authHandler from "../../lib/authHandler.js"
 import fs from "fs/promises"
+import authHandler from "../../lib/authHandler.js"
 import getLogger from "../../lib/log.js"
 
 const logApi = Router()

@@ -1,11 +1,11 @@
 import { Router } from "express"
-import authHandler from "../../lib/authHandler.js"
-import File from "../../models/File.js"
 import { existsSync } from "fs"
-import HusmusenError from "../../models/Error.js"
-import path from "path"
-import getLogger from "../../lib/log.js"
 import { writeFile } from "fs/promises"
+import path from "path"
+import authHandler from "../../lib/authHandler.js"
+import getLogger from "../../lib/log.js"
+import HusmusenError from "../../models/Error.js"
+import File from "../../models/File.js"
 
 const fileApi = Router()
 

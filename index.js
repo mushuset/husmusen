@@ -1,11 +1,11 @@
-import api from "./api/api.js"
-import express from "express"
-import getLogger from "./lib/log.js"
-import rateLimit from "express-rate-limit"
-import requestHandler from "./lib/requestHandler.js"
-import setupGraphicalApp from "./lib/graphicalApp.js"
 import { config as getDotenvOptions } from "dotenv"
+import express from "express"
+import rateLimit from "express-rate-limit"
+import api from "./api/api.js"
 import { startDB } from "./lib/database.js"
+import setupGraphicalApp from "./lib/graphicalApp.js"
+import getLogger from "./lib/log.js"
+import requestHandler from "./lib/requestHandler.js"
 
 // Get variables from the .env file
 getDotenvOptions()

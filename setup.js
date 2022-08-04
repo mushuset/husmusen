@@ -1,6 +1,6 @@
 import colors from "colors"
-import { writeFile, mkdir } from "fs/promises"
 import { existsSync } from "fs"
+import { mkdir, writeFile } from "fs/promises"
 
 const log = (...args) => console.log(colors.yellow("SETUP |"), ...args)
 const err = err => log(colors.red("ERROR!"), err)

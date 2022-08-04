@@ -1,6 +1,6 @@
-import { ItemTypes } from "./Item.js"
-import { readFile, writeFile } from "fs/promises"
 import { existsSync } from "fs"
+import { readFile, writeFile } from "fs/promises"
+import { ItemTypes } from "./Item.js"
 
 /**
  * @typedef {import("./Item").ItemType} ItemType
