@@ -1,0 +1,128 @@
+*, *::before, *::after {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+    font-family: 'Open Sans', sans-serif;
+    color: inherit;
+}
+
+/* Variables */
+*, *::before, *::after {
+    --accent-color: #fd452a;
+    --text-color: #e4dfdc;
+    --bg-color: #241f1c;
+    --standout-color: #342f2c;
+    --muted-color: #948f8c;
+    --link-color: #78affe;
+}
+
+body {
+    color: var(--text-color);
+    background-color: var(--bg-color);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 2vh 0;
+}
+
+header {
+    display: flex;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+
+header img {
+    width: 5rem;
+}
+
+header h1 {
+    font-size: 2rem;
+    margin: auto 2rem;
+}
+
+.muted {
+    color: var(--muted-color);
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: min(90ch, 90vw);
+}
+
+form > * {
+    margin: 1em 0;
+}
+
+form input {
+    font-size: .85rem;
+    padding: .5rem;
+    background-color: var(--standout-color);
+    border: .1rem solid var(--standout-color);
+    border-radius: .5rem;
+    transition: border-color .3s;
+}
+
+form input:hover {
+    border-color: var(--accent-color);
+}
+
+form input:focus, form input:active {
+    border-color: var(--accent-color);
+    outline: .1rem solid var(--accent-color);
+}
+
+.select-switch-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.select-switch {
+    height: 0;
+    width: 0;
+    opacity: 0;
+    position: absolute;
+}
+
+.select-switch + label {
+    background: var(--standout-color);
+    border: .1rem solid var(--standout-color);
+    border-radius: .5rem;
+    padding: .5rem 1rem;
+    margin: .5rem;
+    cursor: pointer;
+    user-select: none;
+}
+
+.select-switch:focus + label, .select-switch:active + label, .select-switch:hover + label  {
+    outline: .1rem solid var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+.select-switch:checked + label {
+    background: var(--accent-color);
+}
+
+.text-inputs {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    place-items: center start;
+    width: min(60ch, 100%);
+}
+
+.text-inputs label {
+    grid-column: 1;
+    margin: 1rem;
+}
+
+.text-inputs input {
+    grid-column: 2;
+    height: fit-content;
+    width: 100%;
+}

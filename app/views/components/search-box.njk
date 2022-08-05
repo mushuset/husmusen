@@ -1,0 +1,81 @@
+<form action="/app/search" method="get">
+    <div class="text-inputs">
+        <label for="keywords">Nyckelord:</label>
+        <input type="search" name="keywords" id="keywords">
+        <label for="freetext">Fritextsökning:</label>
+        <input type="search" name="freetext" id="freetext">
+    </div>
+
+    <p>
+        Klicka på de typer av föremål du vill söka efter. Om du vill söka efter allt, så behöver du inte markera något.
+    </p>
+    <div class="select-switch-container">
+        <input class="select-switch" type="checkbox" name="types" id="book" value="Book">
+        <label for="book">Bok</label>
+        <input class="select-switch" type="checkbox" name="class="select-switch" types" id="building" value="Building">
+        <label for="building">Byggnad</label>
+        <input class="select-switch" type="checkbox" name="class="select-switch" types" id="document" value="Document">
+        <label for="document">Dokument</label>
+        <input class="select-switch" type="checkbox" name="class="select-switch" types" id="film" value="Film">
+        <label for="film">Film</label>
+        <input class="select-switch" type="checkbox" name="class="select-switch" types" id="photo" value="Photo">
+        <label for="photo">Foto</label>
+        <input class="select-switch" type="checkbox" name="class="select-switch" types" id="physicalitem" value="PhysicalItem">
+        <label for="physicalitem">Fysiskt ting</label>
+        <input class="select-switch" type="checkbox" name="class="select-switch" types" id="group" value="Group">
+        <label for="group">Grupp</label>
+        <input class="select-switch" type="checkbox" name="class="select-switch" types" id="historicalevent" value="HistoricalEvent">
+        <label for="historicalevent">Historisk händelse</label>
+        <input class="select-switch" type="checkbox" name="class="select-switch" types" id="interactiveresource" value="InteractiveResource">
+        <label for="interactiveresource">Interaktiv resurs</label>
+        <input class="select-switch" type="checkbox" name="class="select-switch" types" id="map" value="Map">
+        <label for="map">Karta</label>
+        <input class="select-switch" type="checkbox" name="class="select-switch" types" id="concept" value="Concept">
+        <label for="concept">Koncept</label>
+        <input class="select-switch" type="checkbox" name="class="select-switch" types" id="artpiece" value="ArtPiece">
+        <label for="artpiece">Konstverk</label>
+        <input class="select-switch" type="checkbox" name="class="select-switch" types" id="culturalenvironment" value="CulturalEnvironment">
+        <label for="culturalenvironment">Kulturell miljö</label>
+        <input class="select-switch" type="checkbox" name="class="select-switch" types" id="culturalheritage" value="CulturalHeritage">
+        <label for="culturalheritage">Kulturminne</label>
+        <input class="select-switch" type="checkbox" name="class="select-switch" types" id="sound" value="Sound">
+        <label for="sound">Ljud</label>
+        <input class="select-switch" type="checkbox" name="class="select-switch" types" id="organisation" value="Organisation">
+        <label for="organisation">Organisation</label>
+        <input class="select-switch" type="checkbox" name="class="select-switch" types" id="person" value="Person">
+        <label for="person">Person</label>
+        <input class="select-switch" type="checkbox" name="class="select-switch" types" id="blueprint" value="Blueprint">
+        <label for="blueprint">Ritning</label>
+        <input class="select-switch" type="checkbox" name="class="select-switch" types" id="collection" value="Collection">
+        <label for="collection">Samling</label>
+        <input class="select-switch" type="checkbox" name="class="select-switch" types" id="sketch" value="Sketch">
+        <label for="sketch">Skiss</label>
+        <input class="select-switch" type="checkbox" name="class="select-switch" types" id="exhibition" value="Exhibition">
+        <label for="exhibition">Utställning</label>
+    </div>
+
+    <p>Vad vill du sortera resultaten utefter?</p>
+    <div class="select-switch-container">
+        <input class="select-switch" type="radio" name="sort" id="relevance" value="relevance" checked>
+        <label for="relevance">Relevans</label>
+
+        <input class="select-switch" type="radio" name="sort" id="alphabetical" value="name">
+        <label for="alphabetical">Namn</label>
+
+        <input class="select-switch" type="radio" name="sort" id="added-at" value="addedAt">
+        <label for="added-at">Senast tillagd</label>
+
+        <input class="select-switch" type="radio" name="sort" id="updated-at" value="updatedAt">
+        <label for="updated-at">Senast uppdaterad</label>
+
+        <input class="select-switch" type="radio" name="sort" id="item-id" value="itemID">
+        <label for="item-id">Inventarienummer</label>
+    </div>
+
+    <div>
+        <input type="checkbox" name="reverse" id="reverse">
+        <label for="reverse">Jag vill sortera resultaten i omvänd ordning.</label>
+    </div>
+
+    <input type="submit" value="Sök!">
+</form>

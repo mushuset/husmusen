@@ -1,12 +1,12 @@
 {% extends "templates/base.njk" %}
 
 {% block body %}
-    <h1>Välkommen till husmusen!</h1>
-    <p>
-        Vad vill du göra?
-        <ul>
-            <li><a href="/app/search">Jag vill söka efter föremål.</a></li>
-            <li><a href="/app/login">Jag vill komma åt kontrollpanelen.</a></li>
-        </ul>
-    </p>
+    <header>
+        <img src="/static/logo.svg" alt="">
+        <h1>Välkommen till Husmusen!</h1>
+        <img src="/static/logo.svg" alt="">
+    </header>
+    <p>Vad vill du söka efter idag?</p>
+    {% include "components/search-box.njk" %}
+    <a class="muted" href="/app/login">Jag är administratör och vill komma åt kontrollpanelen.</a>
 {% endblock %}

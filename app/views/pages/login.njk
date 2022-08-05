@@ -2,18 +2,20 @@
 
 {% block head %}
     <title>Husmusen - Sök</title>
+    <script src="/static/scripts/login.js" async defer></script>
 {% endblock %}
 
 {% block body %}
-    <form action="/app/control_panel" method="get">
+    <form id="login-form" action="/app/control_panel" method="post">
         <h1>Logga in</h1>
         <p>För att komma åt kontrollpanelen behöver du logga in:</p>
 
-        <label for="username">Användarnamn:</label>
-        <input type="text" name="username" id="username">
-
-        <label for="password">Lösenord:</label>
-        <input type="password" name="password" id="password">
+        <div class="text-inputs">
+            <label for="username">Användarnamn:</label>
+            <input type="text" name="username" id="username">
+            <label for="password">Lösenord:</label>
+            <input type="password" name="password" id="password">
+        </div>
 
         <input type="submit" value="Logga in!">
     </form>

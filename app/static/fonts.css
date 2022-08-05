@@ -1,0 +1,107 @@
+@font-face {
+    font-family: 'Open Sans';
+    font-style: italic;
+    font-weight: 300;
+    font-stretch: normal;
+    font-display: swap;
+    src: url(/static/OpenSans-Italic.ttf)
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-style: italic;
+    font-weight: 400;
+    font-stretch: normal;
+    font-display: swap;
+    src: url(/static/OpenSans-Italic.ttf)
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-style: italic;
+    font-weight: 500;
+    font-stretch: normal;
+    font-display: swap;
+    src: url(/static/OpenSans-Italic.ttf)
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-style: italic;
+    font-weight: 600;
+    font-stretch: normal;
+    font-display: swap;
+    src: url(/static/OpenSans-Italic.ttf)
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-style: italic;
+    font-weight: 700;
+    font-stretch: normal;
+    font-display: swap;
+    src: url(/static/OpenSans-Italic.ttf)
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-style: italic;
+    font-weight: 800;
+    font-stretch: normal;
+    font-display: swap;
+    src: url(/static/OpenSans-Italic.ttf)
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 300;
+    font-stretch: normal;
+    font-display: swap;
+    src: url(/static/OpenSans.ttf)
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 400;
+    font-stretch: normal;
+    font-display: swap;
+    src: url(/static/OpenSans.ttf)
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 500;
+    font-stretch: normal;
+    font-display: swap;
+    src: url(/static/OpenSans.ttf)
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 600;
+    font-stretch: normal;
+    font-display: swap;
+    src: url(/static/OpenSans.ttf)
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 700;
+    font-stretch: normal;
+    font-display: swap;
+    src: url(/static/OpenSans.ttf)
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    font-style: normal;
+    font-weight: 800;
+    font-stretch: normal;
+    font-display: swap;
+    src: url(/static/OpenSans.ttf)
+}
