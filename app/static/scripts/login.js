@@ -1,3 +1,5 @@
+import checkSuccess from "./checkSuccess.js"
+
 const form = document.querySelector("#login-form")
 
 // This will redirect the user to the control panel if they are already logged in.
@@ -22,21 +24,13 @@ form.addEventListener(
             }
         )
             // Handle the response.
-            .then(
-                response => new Promise(
-                    async (resolve, reject) => {
-                        if (response.status !== 200)
-                            reject(await response.json())
-
-                        resolve(await response.json())
-                    }
-                )
-            )
+            .then(checkSuccess)
             // Handle the response data.
             .then(
                 data => {
                     localStorage.setItem("api-token", data.token)
                     localStorage.setItem("api-token-valid-until", data.validUntil)
+                    location.assign("/app/control_panel")
                 }
             )
             // Catch errors.

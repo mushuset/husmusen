@@ -1,4 +1,4 @@
-import { Router } from "express"
+import { request, Router } from "express"
 import authHandler from "../../lib/authHandler.js"
 import { queryDB } from "../../lib/database.js"
 import getLogger from "../../lib/log.js"
@@ -23,10 +23,12 @@ itemApi.get(
         const SORT         = req.query.sort         ?? ""
         const REVERSE      = req.query.reverse      ?? ""
 
+        // If, for some reason, multiple `types=TYPE` are passed, make sure to combine all into one single array of types.
+        const arrayifiedTypes = typeof TYPES === "array" ? TYPES.flatMap(e => e.split(",")) : TYPES.split(",")
         // Make sure the requested types are valid. If there are no valid types in the request, send back an error.
-        const validTypes = TYPES !== "" ? TYPES.split(",").filter(type => ItemTypes.includes(type)) : ItemTypes
+        const validTypes = arrayifiedTypes[0] ? arrayifiedTypes.filter(type => ItemTypes.includes(type)) : ItemTypes
         if (!validTypes[0])
-            return res.status(400).send("No valid types entered!")
+            return res.failit(HusmusenError(400, "ERR_INVALID_PARAMETER", "No valid types entered!"))
 
         // Make sure the requested keywords are valid.
         const allKeywords      = await Keyword.get(validTypes)

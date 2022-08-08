@@ -2,9 +2,13 @@
 
 {% block head %}
     <title>Husmusen - Sök</title>
+    <script src="/static/scripts/search.js" async defer type="module"></script>
 {% endblock %}
 
 {% block body %}
-    <h1>Sökning</h1>
+    <h1>Sökning:</h1>
     {% include "components/search-box.njk" %}
+
+    <h1>Resultat:</h1>
+    <div id="search-results"></div>
 {% endblock %}
