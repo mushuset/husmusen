@@ -47,7 +47,7 @@ header h1 {
 }
 
 p {
-    width: 80ch;
+    width: min(80ch, 100%);
 }
 
 p + p {
@@ -161,10 +161,6 @@ form input:focus, form input:active, form select:focus, form select:active {
 .item h1 {
     font-size: 1.5rem;
     margin-bottom: 1rem;
-}
-
-.item p {
-    width: 100%;
 }
 
 .keyword {
