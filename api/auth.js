@@ -190,7 +190,7 @@ authApi.post(
         ).then(
             () => {
                 res.sendit({ username: req.params.username })
-            log.write(`Admin '${req.auth.username}' deleted the user '${req.params.username}'!`)
+                log.write(`Admin '${req.auth.username}' deleted the user '${req.params.username}'!`)
             }
         ).catch(
             err => {

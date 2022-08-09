@@ -1,10 +1,10 @@
+import checkIfLoggedIn from "./checkIfLoggedIn.js"
 import checkSuccess from "./checkSuccess.js"
 
 const form = document.querySelector("#login-form")
 
 // This will redirect the user to the control panel if they are already logged in.
-if (new Date(Date.now()) < new Date(localStorage.getItem("api-token-valid-until")))
-    location.assign("/app/control_panel")
+checkIfLoggedIn().then(() => window.location.replace("/app/control_panel")).catch()
 
 // Set up the form to work properly.
 form.addEventListener(
@@ -28,6 +28,7 @@ form.addEventListener(
             // Handle the response data.
             .then(
                 data => {
+                    console.log(data)
                     localStorage.setItem("api-token", data.token)
                     localStorage.setItem("api-token-valid-until", data.validUntil)
                     location.assign("/app/control_panel")
