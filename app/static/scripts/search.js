@@ -11,7 +11,7 @@ const reverse     = searchParams.get("reverse")            || null
 
 // Clean up the url if there are multiple `types=TYPE`, e.g. `types=Book&types=Document` or if there are empty queries.
 // This would turn `/app/search?freetext=&sort=name&types=Book&types=Document&` into `/app/search?types=Book,Document&sort=name`.
-if (searchParams.getAll("types").length > 1 || window.location.search.match(/((?<=[\?&])\w+=&|&$)/))
+if (searchParams.getAll("types").length > 1 || window.location.search.match(/((?<=[?&])\w+=&|&$)/))
     window.location.replace(`?${types ? `types=${types}&` : ""}${freetext ? `freetext=${freetext}&` : ""}${keywords ? `keywords=${keywords}&` : ""}${keywordMode ? `keyword_mode=${keywordMode}&` : ""}${sort ? `sort=${sort}&` : ""}${reverse ? `reverse=${reverse}&` : ""}`.replace(/&$/m, ""))
 
 fetch(`/api/1.0.0/item/search${window.location.search}`, { method: "GET" })
