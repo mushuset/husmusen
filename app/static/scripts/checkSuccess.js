@@ -5,11 +5,11 @@
 */
 export default function checkSuccess(response) {
     return new Promise(
-        async (resolve, reject) => {
+        (resolve, reject) => {
             if (response.status !== 200)
-                return reject(await response.json())
+                return response.json().then(reject).catch(reject)
 
-            resolve(await response.json())
+            response.json().then(resolve).catch(reject)
         }
     )
 }
