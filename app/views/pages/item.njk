@@ -23,12 +23,22 @@
         </p>
         <p>Tillagd: {{ item.addedAt.toLocaleString("sv-SE") }}</p>
         <p>Uppdaterad: {{ item.updatedAt.toLocaleString("sv-SE")  }}</p>
-        <div class="item-data">
-            <p>ItemData!</p>
-        </div>
-        <div class="custom-data">
-            <p>CustomData!</p>
-        </div>
+        <table class="item-data">
+            {% for field, value in item.itemData %}
+                <tr>
+                    <td>{{ field }}</td>
+                    <td>{{ value }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+        <table class="custom-data">
+            {% for field, value in item.customData %}
+                <tr>
+                    <td>{{ field }}</td>
+                    <td>{{ value }}</td>
+                </tr>
+            {% endfor %}
+        </table>
         {% if item.isExpired %}
             <p>Objektet har utgått!</p>
             <p>item.expireReason</p>
