@@ -32,7 +32,7 @@ fetch(`/api/1.0.0/item/search${window.location.search}`, { method: "GET" })
                             <p>Nyckelord: <span class="keyword">${item.keywords.split(",").join("</span><span class=\"keyword\">")}</span></p>
                             <p>Tillagd: ${(new Date(item.addedAt)).toLocaleString("sv-SE")}</p>
                             <p>Uppdaterad: ${(new Date(item.updatedAt)).toLocaleString("sv-SE")}</p>
-                            <a href="/app/item#${item.itemID}">Läs mer...</a>
+                            <a href="/app/item/${item.itemID}">Läs mer...</a>
                         </div>
                     `
                 )

@@ -1,0 +1,40 @@
+{% extends "templates/base.njk" %}
+
+{% block head %}
+    <title>{{ item.name or "Error!" }}</title>
+{% endblock %}
+
+{% block body %}
+{% if err %}
+    <h1>Error!</h1>
+    <p>{{ err }}</p>
+{% else %}
+    <div class="item single-view">
+        <h1>{{ item.name }}</h1>
+        <p>{{ item.description }}</p>
+        <p>Inventarienummer: {{ item.itemID }}</p>
+        <p>Typ: {{ item.type }}</p>
+        <p>
+            Nyckelord:
+            {% set keywords = item.keywords %}
+            {% for keyword in item.keywords.split(",") %}
+                <span class="keyword">{{ keyword }}</span>
+            {% endfor %}
+        </p>
+        <p>Tillagd: {{ item.addedAt.toLocaleString("sv-SE") }}</p>
+        <p>Uppdaterad: {{ item.updatedAt.toLocaleString("sv-SE")  }}</p>
+        <div class="item-data">
+            <p>ItemData!</p>
+        </div>
+        <div class="custom-data">
+            <p>CustomData!</p>
+        </div>
+        {% if item.isExpired %}
+            <p>Objektet har utgått!</p>
+            <p>item.expireReason</p>
+        {% endif %}
+        <h2>Filer</h2>
+        <p>Det finns inga filer för det här föremålet!</p>
+    </div>
+{% endif %}
+{% endblock %}

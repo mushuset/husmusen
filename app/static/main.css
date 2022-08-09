@@ -47,7 +47,7 @@ header h1 {
 }
 
 p {
-    width: min(80ch, 100%);
+    max-width: min(80ch, 100%);
 }
 
 p + p {
