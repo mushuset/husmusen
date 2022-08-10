@@ -24,23 +24,31 @@ itemApi.get(
         const REVERSE      = req.query.reverse      ?? ""
 
         // If, for some reason, multiple `types=TYPE` are passed, make sure to combine all into one single array of types.
-        const arrayifiedTypes = TYPES instanceof Array ? TYPES.flatMap(e => e.split(",")) : TYPES.split(",")
+        const arrayifiedTypes = TYPES instanceof Array
+            ? TYPES.flatMap(e => e.split(","))
+            : TYPES.split(",")
         // Make sure the requested types are valid. If there are no valid types in the request, send back an error.
         const validTypes = arrayifiedTypes[0] ? arrayifiedTypes.filter(type => ItemTypes.includes(type)) : ItemTypes
         if (!validTypes[0])
             return res.failit(HusmusenError(400, "ERR_INVALID_PARAMETER", "No valid types entered!"))
 
+        // If, for some reason, multiple `keywords=KEYWORD` are passed, make sure to combine all into one single array of keywords.
+        const arrayifiedKeywords = KEYWORDS instanceof Array
+            ? KEYWORDS.flatMap(e => e.split(","))
+            : KEYWORDS.split(",")
         // Make sure the requested keywords are valid.
         const allKeywords      = await Keyword.get(validTypes)
-        const validKeywords    = KEYWORDS
-            .split(",")
+        const validKeywords    = arrayifiedKeywords
             .filter(keyword => allKeywords.includes(keyword))
             // Sort them in alphabetical order... (More on this later...)
             .sort((a, b) => a.localeCompare(b))
 
         // FIXME: It might be possible to do these search via FULLTEXT indexes using `IN BOOLEAN MODE`...
         // UPDATE: I think that would be "as effective"...
-        const keywordMode      = KEYWORD_MODE.toUpperCase() === "AND" ? "AND" : "OR"
+        // If multiple `keyword_mode=MODE` are passed, they will be combined into an array, make sure to parse said array and get one string.
+        const keywordMode      = KEYWORD_MODE instanceof Array
+            ? KEYWORD_MODE[KEYWORD_MODE.length - 1]
+            : (KEYWORD_MODE.toUpperCase() === "AND" ? "AND" : "OR")
         const keywordSearchSQL = keywordMode === "AND"
             // If in "AND-mode", use this magic RegEx created here:
             // This also requires the keywords to be sorted alphabetically.
@@ -49,7 +57,12 @@ itemApi.get(
             : (validKeywords[0] ? `AND keywords RLIKE '(?-i)(?<=,|^)(${validKeywords.join("|")})(?=,|$)'` : "")
 
         // Make sure the requested sort field is valid, or fall back to `name`.
-        const sortSearchSQL    = `${VALID_SORT_FIELDS.includes(SORT) ? SORT : "name"}`
+        // If multiple `sort=SORT` are passed, they will be combined into an array, make sure to parse said array and get one string.
+        const sort = SORT instanceof Array ? SORT[SORT - 1] : SORT
+        const sortSearchSQL    = `${VALID_SORT_FIELDS.includes(sort) ? sort : "name"}`
+
+        // If multiple `reverse=X` are passed, they will be combined into an array, make sure to parse said array and get one string.
+        const reverse = REVERSE instanceof Array ? REVERSE[REVERSE.length - 1] : REVERSE
         // Since the expected order of `relevance` is descending, while all others are ascending,
         // this has to be used to make sure reverse (and not reverse) sorts the result in the
         // correct order... Basically:
@@ -58,8 +71,8 @@ itemApi.get(
         // If sort by not relevance AND reverse is on  --> Descending
         // If sort by not relevance AND reverse is off --> Ascending
         const reverseSearchSQL  = sortSearchSQL === "relevance"
-            ? REVERSE === "1" || REVERSE === "on" || REVERSE === "true" ? "ASC"  : "DESC"
-            : REVERSE === "1" || REVERSE === "on" || REVERSE === "true" ? "DESC" : "ASC"
+            ? (reverse === "1" || reverse === "on" || reverse === "true" ? "ASC"  : "DESC")
+            : (reverse === "1" || reverse === "on" || reverse === "true" ? "DESC" : "ASC" )
 
         const magicRelevanceFormula   = "((MATCH(name) AGAINST(:freetext IN BOOLEAN MODE) + 1) * (MATCH(description) AGAINST(:freetext IN BOOLEAN MODE) + 1) - 1) / 3"
         const magicRelevanceSearchSQL = FREETEXT ? "AND (MATCH(name) AGAINST(:freetext IN BOOLEAN MODE) OR MATCH(description) AGAINST(:freetext IN BOOLEAN MODE))" : ""
@@ -79,7 +92,7 @@ itemApi.get(
                 `
             },
             {
-                freetext: FREETEXT,
+                freetext: FREETEXT instanceof Array ? FREETEXT.join(",") : FREETEXT,
                 validTypes
             }
         ).then(
