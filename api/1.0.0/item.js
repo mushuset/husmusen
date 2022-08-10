@@ -24,7 +24,7 @@ itemApi.get(
         const REVERSE      = req.query.reverse      ?? ""
 
         // If, for some reason, multiple `types=TYPE` are passed, make sure to combine all into one single array of types.
-        const arrayifiedTypes = typeof TYPES === "array" ? TYPES.flatMap(e => e.split(",")) : TYPES.split(",")
+        const arrayifiedTypes = TYPES instanceof Array ? TYPES.flatMap(e => e.split(",")) : TYPES.split(",")
         // Make sure the requested types are valid. If there are no valid types in the request, send back an error.
         const validTypes = arrayifiedTypes[0] ? arrayifiedTypes.filter(type => ItemTypes.includes(type)) : ItemTypes
         if (!validTypes[0])
@@ -276,7 +276,7 @@ itemApi.post(
                         .catch(
                             err => {
                                 res.failit(HusmusenError(500, "ERR_DATABASE_ERROR", "There was an error deleting the item..."))
-                            log.error("Encountered an error while deleting the item!")
+                                log.error("Encountered an error while deleting the item!")
                                 console.error(err)
                             }
                         )
