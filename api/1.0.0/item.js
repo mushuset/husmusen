@@ -37,7 +37,7 @@ itemApi.get(
             ? KEYWORDS.flatMap(e => e.split(","))
             : KEYWORDS.split(",")
         // Make sure the requested keywords are valid.
-        const allKeywords      = await Keyword.get(validTypes)
+        const allKeywords      = (await Keyword.get(validTypes)).map(keyword => keyword.word)
         const validKeywords    = arrayifiedKeywords
             .filter(keyword => allKeywords.includes(keyword))
             // Sort them in alphabetical order... (More on this later...)
