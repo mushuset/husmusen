@@ -12,6 +12,7 @@
 *, *::before, *::after {
     --accent-color: #fd857a;
     --text-color: #e4dfdc;
+    --input-bg-color: #140f0c;
     --bg-color: #241f1c;
     --muted-color: #948f8c;
     --standout-color: #342f2c;
@@ -114,8 +115,8 @@ form > * {
 form input, form select {
     font-size: .85rem;
     padding: .5rem;
-    background-color: var(--standout-color);
-    border: .1rem solid var(--standout-color);
+    background-color: var(--input-bg-color);
+    border: .1rem solid var(--muted-color);
     border-radius: .5rem;
     transition: border-color .3s;
 }
@@ -143,8 +144,8 @@ form input:focus, form input:active, form select:focus, form select:active {
 }
 
 .select-switch + label {
-    background: var(--standout-color);
-    border: .1rem solid var(--standout-color);
+    background-color: var(--input-bg-color);
+    border: .1rem solid var(--muted-color);
     border-radius: .5rem;
     padding: .5rem 1rem;
     margin: .5rem;
@@ -243,4 +244,28 @@ td {
 
 td:first-child {
     font-weight: bold;
+}
+
+section {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    border: .1rem solid var(--standout-color);
+    width: 90%;
+    margin: 1rem;
+    padding: 1rem;
+    border-radius: .5rem;
+}
+
+section > h1 {
+    width: 100%;
+    text-align: center;
+}
+
+section > form {
+    background-color: var(--standout-color);
+    width: min(75ch, 90%);
+    margin: 1rem;
+    padding: 1rem;
+    border-radius: .5rem;
 }
