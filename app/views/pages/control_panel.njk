@@ -5,21 +5,40 @@
 {% endblock %}
 
 {% block body %}
-    <h1>Vad vill du göra?</h1>
-    <ul>
-        <h2>Föremål:</h2>
-        <li><a href="#">Skapa nytt föremål.</a></li>
-        <li><a href="#">Ändra föremål.</a></li>
-        <li><a href="#">Markera föremål som utgånget.</a></li>
-        <li><a href="#">Permanent ta bort föremål.</a></li>
-        <h2>Filer:</h2>
-        <li><a href="#">Skapa ny fil.</a></li>
-        <li><a href="#">Ändra fil.</a></li>
-        <li><a href="#">Permanent ta bort fil.</a></li>
-        <h2>Min användare:</h2>
-        <li><a href="#">Jag vill ändra mitt lösenord.</a></li>
-        <h2>Admin:</h2>
-        <li><a href="#">Jag vill skapa en användare.</a></li>
-        <li><a href="#">Jag vill ta bort en användare.</a></li>
-    </ul>
+    <h1>Välkommen till kontrollpanelen, vad vill du göra?</h1>
+    <div class="control-panel">
+        <section>
+            <h1>Föremål</h1>
+            <div class="panel"><a href="#">Skapa nytt föremål.</a></div>
+            <div class="panel"><a href="#">Skapa nytt föremål.</a></div>
+            <div class="panel"><a href="#">Markera föremål som utgånget.</a></div>
+            <div class="panel"><a href="#">Permanent ta bort föremål.</a></div>
+        </section>
+        <section>
+            <h1>Filer</h1>
+            <div class="panel"><a href="#">Skapa ny fil.</a></div>
+            <div class="panel"><a href="#">Redigera fil.</a></div>
+            <div class="panel"><a href="#">Permanent ta bort fil.</a></div>
+        </section>
+        <section>
+            <h1>Min användare</h1>
+            <div class="panel">
+                <h2>Ändra lösenord</h2>
+                <form action="/api/auth/change_password" method="post">
+                    <div class="text-inputs">
+                        <label for="current-password">Nuvarande lösenord:</label>
+                        <input type="password" name="currentPassword" id="current-password">
+                        <label for="new-password">Nytt lösenord:</label>
+                        <input type="password" name="newPassword" id="new-password">
+                    </div>
+                    <input type="submit" value="Byt lösenord!">
+                </form>
+            </div>
+        </section>
+        <section>
+            <h1>Administrativa funktioner</h1>
+            <div class="panel"><a href="#">Jag vill skapa en användare.</a></div>
+            <div class="panel"><a href="#">Jag vill ta bort en användare.</a></div>
+        </section>
+    </div>
 {% endblock %}
