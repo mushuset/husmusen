@@ -1,0 +1,32 @@
+{% extends "templates/base.njk" %}
+
+{% block head %}
+    <title>Om Databasen</title>
+{% endblock %}
+
+{% block body %}
+    {% if err %}
+        <p>{{ err | dump }}</p>
+    {% else %}
+        <h1>Om museet:</h1>
+        <table>
+            {% for field, value in dbInfo.museumDetails %}
+                <tr>
+                    <td>{{ field }}</td>
+                    <td>{{ value }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+        <h1>Om databasen:</h1>
+        <table>
+            {% for field, value in dbInfo %}
+                {% if field !== "museumDetails" %}
+                    <tr>
+                        <td>{{ field }}</td>
+                        <td>{{ value }}</td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+        </table>
+    {% endif %}
+{% endblock %}

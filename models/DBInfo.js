@@ -56,7 +56,7 @@ function cacheDBInfo() {
 const DBInfo = {
     /**
      * Gets the DBInfo...
-     * @returns {DBInfo}
+     * @returns {Promise<DBInfo>}
      */
     get: () => new Promise(
         async (resolve, reject) => {
@@ -86,4 +86,4 @@ const DBInfo = {
         }
     )
 }
- export default DBInfo
+export default DBInfo
