@@ -19,9 +19,6 @@
     --link-color: #78affe;
 }
 
-html {
-}
-
 body {
     color: var(--text-color);
     background-color: var(--bg-color);
@@ -161,6 +158,7 @@ form input:focus, form input:active, form select:focus, form select:active {
 .select-switch:checked + label {
     color: var(--bg-color);
     background: var(--accent-color);
+    border-color: var(--accent-color);
 }
 
 .text-inputs {
