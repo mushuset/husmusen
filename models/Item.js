@@ -92,7 +92,7 @@ const Item = {
      * @returns {Promise<Item>} Resolves with an {@link Item} or rejects with an error.
      */
     create: (name, description, keywords, type, itemID, itemData, customData) => new Promise(
-        async (resolve, reject) => {
+        (resolve, reject) => {
             // Check if name is missing.
             if (!name)
                 return reject("'name' cannot be empty!")
@@ -102,36 +102,42 @@ const Item = {
                 return reject(`Type '${type}' is not a valid 'ItemType'!`)
 
             // Check if keywords are valid.
-            const allKeywordsForType = (await Keyword.get([ type ])).map(keyword => keyword.word)
-            const validKeywords = keywords
-                .split(",")
-                .filter(keyword => allKeywordsForType.includes(keyword))
-                // Make sure there are no duplicates.
-                .filter((keyword, index, array) => array.indexOf(keyword) === index)
-                // Sort in alphabetical order.
-                .sort((a, b) => a.localeCompare(b))
-                // Join back to a comma-separated string.
-                .join(",")
+            Keyword.get([ type ])
+                .then(
+                    allKeywordsForType => {
+                        const allKeywordsForTypeAsWords = allKeywordsForType.map(keyword => keyword.word)
+                        const validKeywords = keywords
+                            .split(",")
+                            .filter(keyword => allKeywordsForTypeAsWords.includes(keyword))
+                            // Make sure there are no duplicates.
+                            .filter((keyword, index, array) => array.indexOf(keyword) === index)
+                            // Sort in alphabetical order.
+                            .sort((a, b) => a.localeCompare(b))
+                            // Join back to a comma-separated string.
+                            .join(",")
 
-            const now = new Date(Date.now())
+                        const now = new Date(Date.now())
 
-            /** @type {Item} */
-            const item = {
-                name,
-                description,
-                keywords: validKeywords,
-                type,
-                itemID,
-                addedAt: now,
-                updatedAt: now,
-                itemData: itemData ?? {},
-                customData: customData ?? {},
-                isExpired: false,
-                expireReason: "",
-                itemFiles: []
-            }
+                        /** @type {Item} */
+                        const item = {
+                            name,
+                            description,
+                            keywords: validKeywords,
+                            type,
+                            itemID,
+                            addedAt: now,
+                            updatedAt: now,
+                            itemData: itemData ?? {},
+                            customData: customData ?? {},
+                            isExpired: false,
+                            expireReason: "",
+                            itemFiles: []
+                        }
 
-            resolve(item)
+                        resolve(item)
+                    }
+                )
+                .catch(reject)
         }
     ),
     /**
@@ -160,7 +166,7 @@ const Item = {
      * @param {Item} item The item to be saved.
      */
     save: item => new Promise(
-        async (resolve, reject) => {
+        (resolve, reject) => {
             queryDB(
                 `
                     INSERT INTO husmusen_items (
@@ -210,64 +216,73 @@ const Item = {
      * @returns {Promise<Item>} A promise containing the new {@link Item}.
      */
     update: (itemID, name, description, keywords, type, newItemID, itemData, customData) => new Promise(
-        async (resolve, reject) => {
+        (resolve, reject) => {
             // Check if the item exists.
-            const itemInDatabase = await Item.get(itemID).catch(reject)
-            if (!itemInDatabase)
-                return reject("Item doesn't exist!")
+            Item.get(itemID)
+                .then(
+                    itemInDatabase => {
+                        if (!itemInDatabase)
+                            return reject("Item doesn't exist!")
 
-            // Check if name is missing.
-            if (!name)
-                return reject("'name' cannot be empty!")
+                        // Check if name is missing.
+                        if (!name)
+                            return reject("'name' cannot be empty!")
 
-            // Check if the type is valid.
-            if (!ItemTypes.includes(type))
-                return reject(`Type '${type}' is not a valid 'ItemType'!`)
+                        // Check if the type is valid.
+                        if (!ItemTypes.includes(type))
+                            return reject(`Type '${type}' is not a valid 'ItemType'!`)
 
-            // Check if keywords are valid.
-            const allKeywordsForType = (await Keyword.get([ type ]).catch(reject)).map(keyword => keyword.word)
-            const validKeywords = keywords
-                .split(",")
-                .filter(keyword => allKeywordsForType.includes(keyword))
-                // Make sure there are no duplicates.
-                .filter((keyword, index, array) => array.indexOf(keyword) === index)
-                // Sort in alphabetical order.
-                .sort((a, b) => a.localeCompare(b))
-                // Join back to a comma-separated string.
-                .join(",")
+                        // Check if keywords are valid.
+                        return Keyword.get([ type ])
+                    }
+                )
+                .then(
+                    allKeywordsForType => {
+                        const allKeywordsForTypeAsWords = allKeywordsForType.map(keyword => keyword.word)
+                        const validKeywords = keywords
+                            .split(",")
+                            .filter(keyword => allKeywordsForTypeAsWords.includes(keyword))
+                            // Make sure there are no duplicates.
+                            .filter((keyword, index, array) => array.indexOf(keyword) === index)
+                            // Sort in alphabetical order.
+                            .sort((a, b) => a.localeCompare(b))
+                            // Join back to a comma-separated string.
+                            .join(",")
 
-            const now = new Date(Date.now())
+                        const now = new Date(Date.now())
 
-            queryDB(
-                `
-                    UPDATE husmusen_items SET
-                        name = ?,
-                        description = ?,
-                        keywords = ?,
-                        type = ?,
-                        itemID = ?,
-                        updatedAt = ?,
-                        itemData = ?,
-                        customData = ?
-                    WHERE itemID = ?
+                        return queryDB(
+                            `
+                                UPDATE husmusen_items SET
+                                    name = ?,
+                                    description = ?,
+                                    keywords = ?,
+                                    type = ?,
+                                    itemID = ?,
+                                    updatedAt = ?,
+                                    itemData = ?,
+                                    customData = ?
+                                WHERE itemID = ?
 
-                `, [
-                    name,
-                    description,
-                    validKeywords,
-                    type,
-                    newItemID,
-                    now,
-                    itemData,
-                    customData,
-                    itemID
-                ]
-            )
-            .then(
-                () => Item.get(newItemID)
-            )
-            .then(resolve)
-            .catch(reject)
+                            `, [
+                                name,
+                                description,
+                                validKeywords,
+                                type,
+                                newItemID,
+                                now,
+                                itemData,
+                                customData,
+                                itemID
+                            ]
+                        )
+                    }
+                )
+                .then(
+                    () => Item.get(newItemID)
+                )
+                .then(resolve)
+                .catch(reject)
         }
     ),
     /**
