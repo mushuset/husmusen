@@ -1,4 +1,4 @@
-import { request, Router } from "express"
+import { Router } from "express"
 import authHandler from "../../lib/authHandler.js"
 import { queryDB } from "../../lib/database.js"
 import getLogger from "../../lib/log.js"
@@ -112,6 +112,7 @@ itemApi.get(
     "/info/:id",
     (req, res) => {
         // This should in theory prevent reflected XSS.
+        // NOTE: This might now be unnecessary since errors aren't implicitely sent as HTML any more.
         const rawItemID         = req.params.id
         const fixedLengthItemID = rawItemID.length > 16 ? rawItemID : rawItemID.substring(0, 16)
         const sanitisedItemID   = fixedLengthItemID.replace(/[<>]+/g, "").replace(/script/gi, "")
@@ -182,9 +183,10 @@ itemApi.post(
 
 // Let users and admins edit Items.
 itemApi.post(
-    "/edit/:id",
+    "/edit",
     authHandler({ requiresAdmin: false }),
     (req, res) => {
+        const originalItemID = req.data.itemID
         const {
             name,
             description,
@@ -193,10 +195,10 @@ itemApi.post(
             itemID,
             itemData,
             customData
-        } = req.data
+        } = req.data.newItemData
 
         Item.update(
-            req.params.id,
+            originalItemID,
             name,
             description,
             keywords,
@@ -207,7 +209,7 @@ itemApi.post(
         ).then(
             item => {
                 res.sendit(item)
-                log.write(`${req.auth.isAdmin ? "Admin" : "User"} '${req.auth.username}' edited item with ID '${itemID}'.`)
+                log.write(`${req.auth.isAdmin ? "Admin" : "User"} '${req.auth.username}' edited item that had the ID '${originalItemID}', that now has the ID '${itemID}'.`)
             }
         ).catch(
             err => {
@@ -221,10 +223,10 @@ itemApi.post(
 
 // Let users and admins mark Items as expired.
 itemApi.post(
-    "/mark/:id",
+    "/mark",
     authHandler({ requiresAdmin: false }),
     (req, res) => {
-        const itemID = req.params.id
+        const itemID = req.data.itemID
 
         Item.get(itemID)
             .then(
@@ -266,10 +268,10 @@ itemApi.post(
 
 // Let admins, and admins only, permanently delete Items.
 itemApi.post(
-    "/delete/:id",
+    "/delete",
     authHandler({ requiresAdmin: true }),
     (req, res) => {
-        const itemID = req.params.id
+        const itemID = req.data.itemID
 
         Item.get(itemID)
             .then(
