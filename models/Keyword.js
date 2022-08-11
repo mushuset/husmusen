@@ -20,16 +20,31 @@ import { ItemTypes } from "./Item.js"
 let keywordCache = null
 
 /**
+ * This function makes sure that the keyword file exists.
+ * @returns {void}
+ */
+function createKeywordFileIfNotExists() {
+    return new Promise(
+        (resolve, reject) => {
+            if (!existsSync("./data/keywords.txt"))
+                return writeFile("./data/keywords.txt", "")
+                    .then(resolve)
+                    .catch(reject)
+
+            resolve()
+        }
+    )
+}
+
+/**
  * Caches all keywords from `./data/keywords` to {@link keywordCache}.
  * @returns {Promise}
  */
 function cacheKeywords() {
     return new Promise(
-        async (resolve, reject) => {
-            if (!existsSync("./data/keywords.txt"))
-                await writeFile("./data/keywords.txt", "").catch(reject)
-
-            readFile("./data/keywords.txt")
+        (resolve, reject) => {
+            createKeywordFileIfNotExists()
+                .then(() => readFile("./data/keywords.txt"))
                 .then(fileData => fileData.toString())
                 .then(
                     keywordsAsText => keywordCache = keywordsAsText
@@ -62,18 +77,28 @@ const Keyword = {
      * @returns {Promise<Array<Keyword>>}
      */
     get: types => new Promise(
-        async (resolve, reject) => {
+        (resolve, reject) => {
             if (!types)
                 return reject("ERR_NO_TYPES")
 
             const validTypes     = types.filter(type => ItemTypes.includes(type))
             const searchForTypes = validTypes[0] ? validTypes : ItemTypes
 
+            // If there is no cache, it has to be generated.
             if (!keywordCache)
-                await cacheKeywords().catch(reject)
+                return cacheKeywords()
+                    .then(
+                        () => {
+                            // Find only keywords of specified types.
+                            const foundKeywords = keywordCache.filter(keyword => searchForTypes.includes(keyword.type))
+                            resolve(foundKeywords)
+                        }
+                    )
+                    .catch(reject)
 
+            // Else just use the cachead keywords directly.
+            // Find only keywords of specified types.
             const foundKeywords = keywordCache.filter(keyword => searchForTypes.includes(keyword.type))
-
             resolve(foundKeywords)
         }
     ),
