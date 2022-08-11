@@ -109,7 +109,7 @@ form > * {
     margin: 1em 0;
 }
 
-form input, form select {
+form input, form select, form textarea {
     font-size: .85rem;
     padding: .5rem;
     background-color: var(--input-bg-color);
@@ -118,11 +118,11 @@ form input, form select {
     transition: border-color .3s;
 }
 
-form input:hover, form select:hover {
+form input:hover, form select:hover, form textarea:hover {
     border-color: var(--accent-color);
 }
 
-form input:focus, form input:active, form select:focus, form select:active {
+form input:focus, form input:active, form select:focus, form select:active, form textarea:focus, form textarea:active {
     border-color: var(--accent-color);
     outline: .1rem solid var(--accent-color);
 }
@@ -266,4 +266,41 @@ section > form {
     margin: 1rem;
     padding: 1rem;
     border-radius: .5rem;
+}
+
+.log {
+    display: grid;
+    grid-template-columns: auto auto 1fr;
+    place-items: center start;
+    border: .1rem solid var(--standout-color);
+    width: 90%;
+    padding: 2rem;
+    border-radius: .5rem;
+}
+
+.log > * {
+    margin: 0;
+    padding: .5rem;
+    width: 100%;
+    border-bottom: 1px solid var(--standout-color);
+}
+
+.log > .timestamp {
+    grid-column: 1;
+    color: var(--muted-color);
+}
+
+.log > .prefix {
+    grid-column: 2;
+    color: var(--accent-color)
+}
+
+.log > .message {
+    grid-column: 3;
+    min-width: 100%;
+}
+
+.log .info {
+    grid-column: 1 / 4;
+    border-bottom: 0 none transparent;
 }

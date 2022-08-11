@@ -1,0 +1,5 @@
+name: "Namn"
+description: "Beskrivande beskrvning"
+keywords: "Nyckelord1,Nyckelord2,Nyckelord3,Etc."
+type: "{{ queries.type or \"Book\" }}"
+itemID: 1000

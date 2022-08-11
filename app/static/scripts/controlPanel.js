@@ -5,15 +5,17 @@ import checkSuccess from "./checkSuccess.js"
 // TODO: Maybe fix a pop-up instead?
 checkIfLoggedIn().then().catch(() => window.location.replace("/app/login"))
 
-// Select all forms.
-const forms = document.querySelectorAll("form")
-
-// Make sure all forms are handled in a non-default way.
+// Select all forms that have the `auto-rig` class.
+const forms = document.querySelectorAll("form.auto-rig")
+// Make sure said forms are handled in a special way:
 for (const form of forms) {
     form.addEventListener(
         "submit",
         async (event) => {
+            // Make sure the default way of handling submition is ignored.
             event.preventDefault()
+
+            // Get all data.
             const formData = new FormData(form)
 
             // Read all keys and values into the `payload` variable.
@@ -30,6 +32,49 @@ for (const form of forms) {
                         "Husmusen-Access-Token": localStorage.getItem("api-token")
                     },
                     body: JSON.stringify(payload)
+                }
+            )
+                .then(checkSuccess)
+                .then(
+                    data => alert("Klar! Information: " + JSON.stringify(data))
+                )
+                .catch(
+                    err => {
+                        alert("Error! Kolla i konsolen för mer information.")
+                        console.error(err)
+                    }
+                )
+        }
+    )
+}
+
+// Select all forms that have the `YAML` class.
+const YAMLforms = document.querySelectorAll("form.YAML")
+// Make sure said forms are handled in another special way:
+for (const form of YAMLforms) {
+    form.addEventListener(
+        "submit",
+        event => {
+            // Make sure the default way of handling submition is ignored.
+            event.preventDefault()
+
+            // Get all data.
+            const formData = new FormData(form)
+
+            // Get the payload from the `YAML`-field.
+            let payload = formData.get("YAML")
+
+            // Send a request using the action and method defined in the form-HTML element.
+            // Also, send the payload as the body.
+            fetch(
+                form.getAttribute("action"),
+                {
+                    method: form.getAttribute("method"),
+                    headers: {
+                        "Husmusen-Access-Token": localStorage.getItem("api-token"),
+                        "Content-Type": "application/yaml"
+                    },
+                    body: payload
                 }
             )
                 .then(checkSuccess)

@@ -1,0 +1,24 @@
+{% extends "templates/base.njk" %}
+
+{% block head %}
+    <script src="/static/scripts/controlPanel.js" async defer type="module"></script>
+{% endblock %}
+
+{% block body %}
+    <form action="/api/1.0.0/item/new" method="post" class="YAML">
+        <h1>Skapa nytt objekt:</h1>
+<textarea name="YAML" cols="120" rows="20" style="font-family: monospace">
+{% include "components/parts/Item.yml" %}
+
+itemData:
+{% include "components/parts/ItemData_" + queries.type + ".yml" %}
+
+{% if queries.customData === "on" %}
+customData:
+  color: "Red"
+  field: value
+{% endif %}
+</textarea>
+    <input type="submit" value="Skapa!">
+    </form>
+{% endblock %}

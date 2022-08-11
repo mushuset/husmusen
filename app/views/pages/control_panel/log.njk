@@ -1,0 +1,12 @@
+{% extends "templates/base.njk" %}
+
+{% block head %}
+    <title>Husmusen - Log</title>
+    <script src="/static/scripts/getServerLog.js" async defer type="module"></script>
+{% endblock %}
+
+{% block body %}
+    <div class="log">
+        <p class="info">Läser in loggen...</p>
+    </div>
+{% endblock %}
