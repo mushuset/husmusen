@@ -1,5 +1,4 @@
 import { randomUUID } from "crypto"
-import { writeFile } from "fs/promises"
 import { queryDB } from "../lib/database.js"
 
 /** @typedef {import("./Item").Item}   Item */
@@ -49,7 +48,7 @@ const File = {
                 license,
                 fileID: randomUUID(),
                 addedAt: now,
-                addedAt: now,
+                updatedAt: now,
                 relatedItem
             }
 
