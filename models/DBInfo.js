@@ -34,17 +34,28 @@ const DBINFO_FILE_PATH = "./data/db_info.yml"
  */
 let dbinfoCache = null
 
+function createDBInfoFileIfNotExists () {
+    return new Promise(
+        (resolve, reject) => {
+            if (!existsSync(DBINFO_FILE_PATH))
+                return writeFile(DBINFO_FILE_PATH, "")
+                    .then(resolve)
+                    .catch(reject)
+
+            resolve()
+        }
+    )
+}
+
 /**
  * Caches DBInfo read from `./data/db_info.yml` to {@link dbinfoCache}
  * @returns {void}
  */
 function cacheDBInfo() {
     return new Promise(
-        async (resolve, reject) => {
-            if (!existsSync(DBINFO_FILE_PATH))
-                await writeFile(DBINFO_FILE_PATH, "").catch(reject)
-
-            readFile(DBINFO_FILE_PATH)
+        (resolve, reject) => {
+            createDBInfoFileIfNotExists()
+                .then(() => readFile(DBINFO_FILE_PATH))
                 .then(fileData => fileData.toString())
                 .then(DBInfoYAML => dbinfoCache = YAML.parse(DBInfoYAML))
                 .then(resolve)
@@ -59,10 +70,12 @@ const DBInfo = {
      * @returns {Promise<DBInfo>}
      */
     get: () => new Promise(
-        async (resolve, reject) => {
+        (resolve, reject) => {
             // If there is no cache, generate it...
             if (!dbinfoCache)
-                await cacheDBInfo().catch(reject)
+                return cacheDBInfo()
+                    .then(() => resolve(dbinfoCache))
+                    .catch(reject)
 
             resolve(dbinfoCache)
         }
