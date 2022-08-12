@@ -1,5 +1,6 @@
 import { Router } from "express"
 import YAML from "yaml"
+import authHandler from "../lib/authHandler.js"
 import DBInfo from "../models/DBInfo.js"
 import Item from "../models/Item.js"
 
@@ -27,7 +28,7 @@ routes.get("/about", (_, res) => res.render("pages/about.njk"))
 
 routes.get("/login", (_, res) => res.render("pages/login.njk"))
 
-routes.get("/control_panel", (_, res) => res.render("pages/control_panel/index.njk"))
+routes.get("/control_panel", (req, res) => res.render("pages/control_panel/index.njk", { auth: req.auth }))
 
 routes.get(
     "/control_panel/new_item",
@@ -67,5 +68,8 @@ routes.get(
 )
 
 routes.get("/control_panel/log", (_, res) => res.render("pages/control_panel/log.njk"))
+
+if (process.env.DEBUG === "true")
+    routes.get("/setup", (_, res) => res.render("pages/setup.njk"))
 
 export default routes

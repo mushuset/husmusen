@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block body %}
-    <h1>Välkommen till kontrollpanelen, vad vill du göra?</h1>
+    <h1>Välkommen till kontrollpanelen!</h1>
     <section>
         <h1>Föremål</h1>
         <form action="/app/control_panel/new_item" method="get">
@@ -80,6 +80,7 @@
             <label for="item-id">Vilket ID har föremålet du vill ta bort?</label>
             <input type="text" id="item-id" name="itemID">
             <input type="submit" value="Ta bort!">
+            <p>Endast en admin kan göra det här!</p>
         </form>
     </section>
     <section>
@@ -120,13 +121,19 @@
                 <label for="isAdmin">Denna användare ska vara en admin.</label>
             </div>
             <input type="submit" value="Skapa!">
+            <p>Endast en admin kan göra det här!</p>
         </form>
         <form action="/api/auth/delete" method="post" class="auto-rig">
             <h2>Ta bort användare</h2>
             <label for="username">Vilken användare vill du ta bort?</label>
             <input type="text" name="username" id="username">
             <input type="submit" value="Ta bort!">
+            <p>Endast en admin kan göra det här!</p>
         </form>
-        <form><a href="/app/control_panel/log">Jag vill se loggen.</a></form>
+        <form>
+            <h2>Se server-loggen</h2>
+            <a href="/app/control_panel/log">Klicka här för att se loggen.</a>
+            <p>Endast en admin kan göra det här!</p>
+        </form>
     </section>
 {% endblock %}
