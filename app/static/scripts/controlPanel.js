@@ -107,7 +107,7 @@ document.querySelector("#log-out-form")
 
 // Handle the edit-item-form:
 const editItemForm = document.querySelector("#edit-item-form")
-editItemForm.addEventListener(
+editItemForm?.addEventListener(
     "submit",
     event => {
         event.preventDefault()
