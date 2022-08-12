@@ -48,6 +48,75 @@ for (const form of forms) {
     )
 }
 
+/**
+ * This function creates a Buffer from a Blob.
+ * @param {Blob} blob
+ * @returns {Promise<Buffer>}
+ */
+function getFileDataBufferToDataURL(blob) {
+    return new Promise(
+        (resolve, reject) => {
+            const reader = new FileReader()
+            reader.onload = result => resolve(result.target.result)
+            reader.readAsDataURL(blob)
+            reader.onerror = err => reject(err)
+        }
+    )
+}
+
+// Set up the file creation form.
+const fileCreationForm = document.querySelector("#file-creation-form")
+fileCreationForm?.addEventListener(
+    "submit",
+    async event => {
+        event.preventDefault()
+        const formData = new FormData(fileCreationForm)
+        const file     = formData.get("fileDataBuffer")
+        const fileMIME = file.type
+
+        const rawFileData    = document.querySelector("#file-data-buffer").files[0]
+        const fileDataURL = await getFileDataBufferToDataURL(rawFileData)
+            .catch(
+                err => {
+                    alert("Error! Kolla i konsolen för mer information.")
+                    console.error(err)
+                }
+            )
+
+        const payload = {
+            name: formData.get("name"),
+            description: formData.get("description"),
+            license: formData.get("license"),
+            relatedItem: formData.get("relatedItem"),
+            type: fileMIME,
+            fileDataURL
+        }
+
+        // console.dir({ fileDataBuffer, fileDataBufferJSON: Array.from(new Uint8Array(fileDataBuffer)) })
+
+        fetch(
+            fileCreationForm.getAttribute("action"),
+            {
+                method: fileCreationForm.getAttribute("method"),
+                headers: {
+                    "Husmusen-Access-Token": localStorage.getItem("api-token")
+                },
+                body: JSON.stringify(payload)
+            }
+        )
+            .then(checkSuccess)
+            .then(
+                data => alert("Klar! Information: " + JSON.stringify(data))
+            )
+            .catch(
+                err => {
+                    alert("Error! Kolla i konsolen för mer information.")
+                    console.error(err)
+                }
+            )
+    }
+)
+
 // Select all forms that have the `YAML` class.
 const YAMLforms = document.querySelectorAll("form.YAML")
 // Make sure said forms are handled in another special way:

@@ -88,6 +88,22 @@
         <form><a href="#">Skapa ny fil.</a></form>
         <form><a href="#">Redigera fil.</a></form>
         <form><a href="#">Permanent ta bort fil.</a></form>
+        <form action="/api/1.0.0/file/new" method="post" id="file-creation-form">
+            <h2>Skapa ny fil</h2>
+            <div class="text-inputs">
+                <label for="name">Namn:</label>
+                <input type="text" name="name" id="name">
+                <label for="description">Beskrvning:</label>
+                <input type="text" name="description" id="description">
+                <label for="license">Licens:</label>
+                <input type="text" name="license" id="license">
+                <label for="related-item">Relaterat föremål:</label>
+                <input type="text" name="relatedItem" id="related-item">
+            </div>
+            <label for="file-data-buffer">Välj din fil här:</label>
+            <input type="file" name="fileDataBuffer" id="file-data-buffer">
+            <input type="submit" value="Skapa!">
+        </form>
     </section>
     <section>
         <h1>Min användare</h1>

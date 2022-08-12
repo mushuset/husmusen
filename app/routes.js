@@ -1,6 +1,5 @@
 import { Router } from "express"
 import YAML from "yaml"
-import authHandler from "../lib/authHandler.js"
 import DBInfo from "../models/DBInfo.js"
 import Item from "../models/Item.js"
 

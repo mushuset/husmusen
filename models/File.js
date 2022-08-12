@@ -79,7 +79,7 @@ const File = {
                         type,
                         license,
                         fileID,
-                        addetAt,
+                        addedAt,
                         updatedAt,
                         relatedItem
                     ) VALUES (

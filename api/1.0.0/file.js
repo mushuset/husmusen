@@ -18,12 +18,22 @@ fileApi.get(
         const sanitisedItemID = req.params.id
             .replace(/[./\\]+/g, "")
 
-        // Check if the file exists. If it doesn't, send an error.
-        if (!existsSync(`./data/files/${sanitisedItemID}`))
-            return res.failit(HusmusenError(404, "ERR_FILE_NOT_FOUND", "That file does not exist."))
 
-        // Send back the file.
-        res.sendFile(path.join(`${path.resolve()}/data/files/${sanitisedItemID}`))
+
+        File.get(sanitisedItemID)
+            .then(
+                file => {
+                    const fileExtension = file.type.replace(/^\w+\//, "")
+
+                    //Check if the file exists. If it doesn't, send an error.
+                    if (!existsSync(`./data/files/${sanitisedItemID}.${fileExtension}`))
+                        return res.failit(HusmusenError(404, "ERR_FILE_NOT_FOUND", "That file does not exist."))
+
+                    // Send back the file.
+                    res.sendFile(path.join(`${path.resolve()}/data/files/${file.fileID}.${fileExtension}`))
+                }
+            )
+
     }
 )
 fileApi.get(
@@ -55,13 +65,18 @@ fileApi.post(
             type,
             license,
             relatedItem,
-            fileDataBuffer
+            fileDataURL
         } = req.data
+
+        console.dir(fileDataURL)
+        const fileData       = fileDataURL.split(",")[1]
+        const fileDataBuffer = Buffer.from(fileData, "base64")
+        const fileExtension  = type.replace(/^\w+\//, "")
 
         File.create(name, type, license, relatedItem)
             .then(
                 async file => {
-                    writeFile(`./data/files/${file.fileID}`, fileDataBuffer)
+                    writeFile(`./data/files/${file.fileID}.${fileExtension}`, fileDataBuffer)
                         .then(
                             () => {
                                 File.save(file)
