@@ -1,6 +1,7 @@
 {% extends "templates/base.njk" %}
 
 {% block head %}
+    <title>Husmusen - Kontrollpanel</title>
     <script src="/static/scripts/controlPanel.js" async defer type="module"></script>
 {% endblock %}
 
@@ -106,8 +107,26 @@
     </section>
     <section>
         <h1>Administrativa funktioner</h1>
-        <form><a href="#">Jag vill skapa en användare.</a></form>
-        <form><a href="#">Jag vill ta bort en användare.</a></form>
+        <form>
+            <h2>Skapa användare</h2>
+            <div class="text-inputs">
+                <label for="usename">Användarnamn:</label>
+                <input type="text" name="username" id="usename">
+                <label for="password">Lösenord:</label>
+                <input type="password" name="password" id="password">
+            </div>
+            <div>
+                <input type="checkbox" name="isAdmin" id="isAdmin">
+                <label for="isAdmin">Denna användare ska vara en admin.</label>
+            </div>
+            <input type="submit" value="Skapa!">
+        </form>
+        <form action="/api/auth/delete" method="post" class="auto-rig">
+            <h2>Ta bort användare</h2>
+            <label for="username">Vilken användare vill du ta bort?</label>
+            <input type="text" name="username" id="username">
+            <input type="submit" value="Ta bort!">
+        </form>
         <form><a href="/app/control_panel/log">Jag vill se loggen.</a></form>
     </section>
 {% endblock %}

@@ -80,9 +80,6 @@ authApi.post(
         if (!password)
             return res.failit(HusmusenError(400, "ERR_MISSING_PARAMETER", "You must define a password!"))
 
-        if (isAdmin === undefined)
-            return res.failit(HusmusenError(400, "ERR_MISSING_PARAMETER", "You must define 'isAdmin'!"))
-
         if (!username.match(/^\w{0,32}$/))
             return res.failit(HusmusenError(400, "ERR_INVALID_PARAMETER", "Username can only be A-Z, a-z, 0-9, and underscore (_)! It must be no more than 32 characters!"))
 
@@ -178,19 +175,24 @@ authApi.post(
 )
 
 authApi.post(
-    "/delete/:username",
+    "/delete",
     authHandler({ requiresAdmin: true }),
     (req, res) => {
-        if (req.params.username === req.auth.username)
+        const username = req.data.username
+
+        if (!username)
+            return res.failit(HusmusenError(400, "ERR_INVALID_PARAMETER", "You need to specify a `username`!"))
+
+        if (username === req.auth.username)
             return res.failit(HusmusenError(402, "ERR_FORBIDDEN_ACTION","You cannot delete yourself!"))
 
         queryDB(
             "DELETE FROM husmusen_users WHERE username = ?",
-            [ req.params.username ]
+            [ username ]
         ).then(
             () => {
-                res.sendit({ username: req.params.username })
-                log.write(`Admin '${req.auth.username}' deleted the user '${req.params.username}'!`)
+                res.sendit({ username })
+                log.write(`Admin '${username}' deleted the user '${username}'!`)
             }
         ).catch(
             err => {
