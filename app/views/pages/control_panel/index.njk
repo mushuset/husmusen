@@ -61,7 +61,11 @@
             </div>
             <input type="submit" value="Skapa!">
         </form>
-        <form><a href="#">Redigera befintligt föremål.</a></form>
+        <form action="/app/control_panel/edit_item" method="get">
+            <h2>Redigera föremål</h2>
+            <label for="item-id">Vilket ID har föremålet du vill redigera?</label>
+            <input type="text" name="itemID" id="item-id">
+        </form>
         <form action="/api/1.0.0/item/mark" method="post" class="auto-rig">
             <h2>Markera som utgånget</h2>
             <label for="item-id">Vilket ID har föremålet du markera som utgånget?</label>
@@ -94,6 +98,10 @@
                 <input type="password" name="newPassword" id="new-password">
             </div>
             <input type="submit" value="Byt lösenord!">
+        </form>
+        <form action="#" id="log-out-form">
+            <h2>Logga ut</h2>
+            <input type="submit" value="Logga ut!">
         </form>
     </section>
     <section>

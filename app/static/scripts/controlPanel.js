@@ -90,3 +90,59 @@ for (const form of YAMLforms) {
         }
     )
 }
+
+// Make it so that the user can log out.
+// This deletes the current API token.
+document.querySelector("#log-out-form")
+    ?.addEventListener(
+        "submit",
+        event => {
+            event.preventDefault()
+            localStorage.removeItem("api-token")
+            localStorage.removeItem("api-token-valid-until")
+            window.location.assign("/app")
+        }
+    )
+
+
+// Handle the edit-item-form:
+const editItemForm = document.querySelector("#edit-item-form")
+editItemForm.addEventListener(
+    "submit",
+    event => {
+        event.preventDefault()
+        const formData    = new FormData(editItemForm)
+        const itemID      = formData.get("itemID")
+        const newItemData = formData.get("newItemData")
+
+        // This part has to look like this so the YAML gets formatted properly.
+        const payload = `\
+itemID: ${itemID}
+newItemData:
+${newItemData.replace(/^(?!$)/gm, "  ")}
+`
+        console.log(payload)
+
+        fetch(
+            editItemForm.getAttribute("action"),
+            {
+                method: editItemForm.getAttribute("method"),
+                headers: {
+                    "Husmusen-Access-Token": localStorage.getItem("api-token"),
+                    "Content-Type": "application/yaml"
+                },
+                body: payload
+            }
+        )
+            .then(checkSuccess)
+            .then(
+                data => alert("Klar! Information: " + JSON.stringify(data))
+            )
+            .catch(
+                err => {
+                    alert("Error! Kolla i konsolen för mer information.")
+                    console.error(err)
+                }
+            )
+    }
+)

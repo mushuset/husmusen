@@ -1,4 +1,5 @@
 import { Router } from "express"
+import YAML from "yaml"
 import DBInfo from "../models/DBInfo.js"
 import Item from "../models/Item.js"
 
@@ -40,12 +41,29 @@ routes.get(
 
 routes.get(
     "/control_panel/edit_item",
-    (req, res) => res.render(
-        "pages/control_panel/edit_item.njk",
-        {
-            queries: req.query
-        }
-    )
+    (req, res) => Item.get(req.query.itemID)
+        .then(
+            item => res.render(
+                "pages/control_panel/edit_item.njk",
+                {
+                    itemID: req.query.itemID,
+                    // Only send what is needed.
+                    // Fields such as `addedAt` cannot be modified anyways.
+                    itemAsYAML: YAML.stringify({
+                        itemID: item.itemID,
+                        name: item.name,
+                        keywords: item.keywords,
+                        description: item.description,
+                        type: item.type,
+                        itemData: item.itemData,
+                        customData: item.customData
+                    })
+                }
+            )
+        )
+        .catch(
+            err => res.render("pages/control_panel/edit_item.njk", { err })
+        )
 )
 
 routes.get("/control_panel/log", (_, res) => res.render("pages/control_panel/log.njk"))
