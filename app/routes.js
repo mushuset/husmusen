@@ -1,6 +1,7 @@
 import { Router } from "express"
 import YAML from "yaml"
 import DBInfo from "../models/DBInfo.js"
+import File from "../models/File.js"
 import Item from "../models/Item.js"
 
 const routes = Router()
@@ -57,6 +58,30 @@ routes.get(
                         type: item.type,
                         itemData: item.itemData,
                         customData: item.customData
+                    })
+                }
+            )
+        )
+        .catch(
+            err => res.render("pages/control_panel/edit_item.njk", { err })
+        )
+)
+
+routes.get(
+    "/control_panel/edit_file",
+    (req, res) => File.get(req.query.fileID)
+        .then(
+            file => res.render(
+                "pages/control_panel/edit_file.njk",
+                {
+                    fileID: req.query.fileID,
+                    // Only send what is needed.
+                    // Fields such as `addedAt` cannot be modified anyways.
+                    fileAsYAML: YAML.stringify({
+                        name: file.name,
+                        description: file.description,
+                        license: file.license,
+                        relatedItem: file.relatedItem
                     })
                 }
             )

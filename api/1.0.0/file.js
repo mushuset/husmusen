@@ -1,6 +1,6 @@
 import { Router } from "express"
 import { existsSync } from "fs"
-import { writeFile } from "fs/promises"
+import { rm, writeFile } from "fs/promises"
 import path from "path"
 import authHandler from "../../lib/authHandler.js"
 import getLogger from "../../lib/log.js"
@@ -114,21 +114,21 @@ fileApi.post(
     }
 )
 fileApi.post(
-    "/edit/:id",
+    "/edit",
     authHandler({ requiresAdmin: false }),
     (req, res) => {
+        const originalFileID = req.data.fileID
         const {
             name,
-            type,
             license,
             relatedItem
-        } = req.data
+        } = req.data.newFileData
 
-        File.update(req.params.id, name, type, license, relatedItem)
+        File.update(originalFileID, name, license, relatedItem)
             .then(
                 file => {
                     res.sendit(file)
-                    log.write(`${req.auth.isAdmin ? "Admin" : "User"} '${req.auth.username}' created file with ID '${file.fileID}'.`)
+                    log.write(`${req.auth.isAdmin ? "Admin" : "User"} '${req.auth.username}' edited file with ID '${file.fileID}'.`)
                 }
             )
             .catch(
@@ -141,10 +141,10 @@ fileApi.post(
     }
 )
 fileApi.post(
-    "/delete/:id",
+    "/delete",
     authHandler({ requiresAdmin: false }),
     (req, res) => {
-        const fileID = req.params.id
+        const fileID = req.data.fileID
 
         File.get(fileID)
             .then(
@@ -152,7 +152,9 @@ fileApi.post(
                     if (!fileInDatabase)
                         return res.failit(HusmusenError(404, "ERR_FILE_NOT_FOUND", "That file does not exist!"))
 
-                    File.delete(fileID)
+                    const fileExtension = fileInDatabase.type.replace(/^\w+\//g, "")
+                    rm(`./data/files/${fileID}.${fileExtension}`)
+                        .then(() => File.delete(fileID))
                         .then(
                             () => {
                                 res.sendit(fileInDatabase)
@@ -161,7 +163,7 @@ fileApi.post(
                         )
                         .catch(
                             err => {
-                                res.failit(HusmusenError(500, "ERR_DATABASE_ERROR", "There was an deleting the file..."))
+                                res.failit(HusmusenError(500, "ERR_UNKNOWN_ERROR", "There was an deleting the file..."))
                                 log.error("Encountered an error while deleting the file!")
                                 console.error(err)
                             }

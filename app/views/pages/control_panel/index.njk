@@ -66,6 +66,7 @@
             <h2>Redigera föremål</h2>
             <label for="item-id">Vilket ID har föremålet du vill redigera?</label>
             <input type="text" name="itemID" id="item-id">
+            <input type="submit" value="Redigera!">
         </form>
         <form action="/api/1.0.0/item/mark" method="post" class="auto-rig">
             <h2>Markera som utgånget</h2>
@@ -85,9 +86,6 @@
     </section>
     <section>
         <h1>Filer</h1>
-        <form><a href="#">Skapa ny fil.</a></form>
-        <form><a href="#">Redigera fil.</a></form>
-        <form><a href="#">Permanent ta bort fil.</a></form>
         <form action="/api/1.0.0/file/new" method="post" id="file-creation-form">
             <h2>Skapa ny fil</h2>
             <div class="text-inputs">
@@ -103,6 +101,18 @@
             <label for="file-data-buffer">Välj din fil här:</label>
             <input type="file" name="fileDataBuffer" id="file-data-buffer">
             <input type="submit" value="Skapa!">
+        </form>
+        <form action="/app/control_panel/edit_file" method="get">
+            <h2>Redigera fil</h2>
+            <label for="file-id">Vilket ID har filen du vill redigera?</label>
+            <input type="text" name="fileID" id="file-id">
+            <input type="submit" value="Redigera!">
+        </form>
+        <form action="/api/1.0.0/file/delete" method="post" class="auto-rig">
+            <h2>Permanent ta bort fil</h2>
+            <label for="file-id">Vilket ID har filen du vill ta bort?</label>
+            <input type="text" name="fileID" id="file-id">
+            <input type="submit" value="Ta bort!">
         </form>
     </section>
     <section>

@@ -188,14 +188,55 @@ editItemForm?.addEventListener(
         const payload = `\
 itemID: ${itemID}
 newItemData:
-${newItemData.replace(/^(?!$)/gm, "  ")}
-`
-        console.log(payload)
+${newItemData.replace(/^(?!$)/gm, "  ")}`
 
         fetch(
             editItemForm.getAttribute("action"),
             {
                 method: editItemForm.getAttribute("method"),
+                headers: {
+                    "Husmusen-Access-Token": localStorage.getItem("api-token"),
+                    "Content-Type": "application/yaml"
+                },
+                body: payload
+            }
+        )
+            .then(checkSuccess)
+            .then(
+                data => alert("Klar! Information: " + JSON.stringify(data))
+            )
+            .catch(
+                err => {
+                    alert("Error! Kolla i konsolen för mer information.")
+                    console.error(err)
+                }
+            )
+    }
+)
+
+// FIXME: This looks very much like the above function.
+// It could probably be generalised to have one function for each.
+// ---
+// Handle the edit-file-form:
+const editFileForm = document.querySelector("#edit-file-form")
+editFileForm?.addEventListener(
+    "submit",
+    event => {
+        event.preventDefault()
+        const formData    = new FormData(editFileForm)
+        const fileID      = formData.get("fileID")
+        const newFileData = formData.get("newFileData")
+
+        // This part has to look like this so the YAML gets formatted properly.
+        const payload = `\
+fileID: ${fileID}
+newFileData:
+${newFileData.replace(/^(?!$)/gm, "  ")}`
+
+        fetch(
+            editFileForm.getAttribute("action"),
+            {
+                method: editFileForm.getAttribute("method"),
                 headers: {
                     "Husmusen-Access-Token": localStorage.getItem("api-token"),
                     "Content-Type": "application/yaml"

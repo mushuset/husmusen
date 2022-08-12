@@ -104,13 +104,10 @@ const File = {
      * @param {File_} changedData The new file data.
      * @returns {Promise<File_>}
      */
-    update: (fileID, name, type, license, relatedItem) => new Promise(
+    update: (fileID, name, license, relatedItem) => new Promise(
         (resolve, reject) => {
             if (!name)
                 return reject("'name' cannot be empty!")
-
-            if (!type)
-                return reject("'type' cannot be empty!")
 
             if (!license)
                 return reject("You must specify a license!")
@@ -123,16 +120,14 @@ const File = {
             queryDB(
                 `
                     UPDATE husmusen_files SET
-                        name,
-                        type,
-                        license,
-                        updatedAt,
-                        relatedItem
+                        name = ?,
+                        license = ?,
+                        updatedAt = ?,
+                        relatedItem = ?
                     WHERE fileID = ?
                 `,
                 [
                     name,
-                    type,
                     license,
                     now,
                     relatedItem,
