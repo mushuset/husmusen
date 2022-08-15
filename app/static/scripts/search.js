@@ -1,5 +1,9 @@
 import checkSuccess from "./checkSuccess.js"
 
+// Scroll to the results some small time after  page load:
+setTimeout(() => window.scrollTo(0, 500), 100)
+
+
 const searchParams = (new URL(window.location)).searchParams
 
 const types       = searchParams.getAll("types").join(",") || null
