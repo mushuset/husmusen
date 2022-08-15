@@ -127,6 +127,15 @@ form input:focus, form input:active, form select:focus, form select:active, form
     outline: .1rem solid var(--accent-color);
 }
 
+form input[type="submit"] {
+    color: var(--bg-color);
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    cursor: pointer;
+    padding: .5rem 3rem;
+    font-size: 1rem;
+}
+
 .select-switch-container {
     display: flex;
     flex-wrap: wrap;
