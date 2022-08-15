@@ -9,7 +9,7 @@ const routes = Router()
 
 routes.get("/", (_, res) => res.render("pages/index.njk"))
 
-routes.get("/search", (_, res) => res.render("pages/search.njk"))
+routes.get("/search", (req, res) => res.render("pages/search.njk", { queries: req.query }))
 
 routes.get(
     "/item/:itemID",

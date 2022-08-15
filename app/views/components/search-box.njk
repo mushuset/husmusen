@@ -1,13 +1,13 @@
 <form action="/app/search" method="get">
     <div class="text-inputs">
         <label for="freetext">Fritextsökning:</label>
-        <input type="search" name="freetext" id="freetext">
+        <input type="search" name="freetext" id="freetext" value="{{ queries.freetext }}">
         <label for="keywords">Nyckelord:</label>
-        <input type="search" name="keywords" id="keywords">
+        <input type="search" name="keywords" id="keywords" value="{{ queries.keywords }}">
         <label for="keyword-mode">Nyckelordsläge:</label>
         <select name="keyword_mode" id="keyword-mode">
-            <option value="OR">Eller-läge. (Minst ett nyckelord finns med i resultatet.)</option>
-            <option value="AND">Och-läge. (Alla nyckelord finns med i resultatet.)</option>
+            <option value="OR" {{ "selected" if queries.keyword_mode === "OR" }}>Eller-läge. (Minst ett nyckelord finns med i resultatet.)</option>
+            <option value="AND" {{ "selected" if queries.keyword_mode === "AND" }}>Och-läge. (Alla nyckelord finns med i resultatet.)</option>
         </select>
         <p><a href="/app/keywords">Här kan du se alla nyckelord!</a></p>
     </div>
@@ -16,70 +16,70 @@
         Klicka på de typer av föremål du vill söka efter. Om du vill söka efter allt, så behöver du inte markera något.
     </p>
     <div class="select-switch-container">
-        <input class="select-switch" type="checkbox" name="types" id="book" value="Book">
+        <input class="select-switch" type="checkbox" name="types" id="book" value="Book" {{ "checked" if r/Book/.test(queries.types) }}>
         <label for="book">Bok</label>
-        <input class="select-switch" type="checkbox" name="types" id="building" value="Building">
+        <input class="select-switch" type="checkbox" name="types" id="building" value="Building" {{ "checked" if r/Building/.test(queries.types) }}>
         <label for="building">Byggnad</label>
-        <input class="select-switch" type="checkbox" name="types" id="document" value="Document">
+        <input class="select-switch" type="checkbox" name="types" id="document" value="Document" {{ "checked" if r/Document/.test(queries.types) }}>
         <label for="document">Dokument</label>
-        <input class="select-switch" type="checkbox" name="types" id="film" value="Film">
+        <input class="select-switch" type="checkbox" name="types" id="film" value="Film" {{ "checked" if r/Film/.test(queries.types) }}>
         <label for="film">Film</label>
-        <input class="select-switch" type="checkbox" name="types" id="photo" value="Photo">
+        <input class="select-switch" type="checkbox" name="types" id="photo" value="Photo" {{ "checked" if r/Photo/.test(queries.types) }}>
         <label for="photo">Foto</label>
-        <input class="select-switch" type="checkbox" name="types" id="physicalitem" value="PhysicalItem">
+        <input class="select-switch" type="checkbox" name="types" id="physicalitem" value="PhysicalItem" {{ "checked" if r/PhysicalItem/.test(queries.types) }}>
         <label for="physicalitem">Fysiskt ting</label>
-        <input class="select-switch" type="checkbox" name="types" id="group" value="Group">
+        <input class="select-switch" type="checkbox" name="types" id="group" value="Group" {{ "checked" if r/Group/.test(queries.types) }}>
         <label for="group">Grupp</label>
-        <input class="select-switch" type="checkbox" name="types" id="historicalevent" value="HistoricalEvent">
+        <input class="select-switch" type="checkbox" name="types" id="historicalevent" value="HistoricalEvent" {{ "checked" if r/HistoricalEvent/.test(queries.types) }}>
         <label for="historicalevent">Historisk händelse</label>
-        <input class="select-switch" type="checkbox" name="types" id="interactiveresource" value="InteractiveResource">
+        <input class="select-switch" type="checkbox" name="types" id="interactiveresource" value="InteractiveResource" {{ "checked" if r/InteractiveResource/.test(queries.types) }}>
         <label for="interactiveresource">Interaktiv resurs</label>
-        <input class="select-switch" type="checkbox" name="types" id="map" value="Map">
+        <input class="select-switch" type="checkbox" name="types" id="map" value="Map" {{ "checked" if r/Map/.test(queries.types) }}>
         <label for="map">Karta</label>
-        <input class="select-switch" type="checkbox" name="types" id="concept" value="Concept">
+        <input class="select-switch" type="checkbox" name="types" id="concept" value="Concept" {{ "checked" if r/Concept/.test(queries.types) }}>
         <label for="concept">Koncept</label>
-        <input class="select-switch" type="checkbox" name="types" id="artpiece" value="ArtPiece">
+        <input class="select-switch" type="checkbox" name="types" id="artpiece" value="ArtPiece" {{ "checked" if r/ArtPiece/.test(queries.types) }}>
         <label for="artpiece">Konstverk</label>
-        <input class="select-switch" type="checkbox" name="types" id="culturalenvironment" value="CulturalEnvironment">
+        <input class="select-switch" type="checkbox" name="types" id="culturalenvironment" value="CulturalEnvironment" {{ "checked" if r/CulturalEnvironment/.test(queries.types) }}>
         <label for="culturalenvironment">Kulturell miljö</label>
-        <input class="select-switch" type="checkbox" name="types" id="culturalheritage" value="CulturalHeritage">
+        <input class="select-switch" type="checkbox" name="types" id="culturalheritage" value="CulturalHeritage" {{ "checked" if r/CulturalHeritage/.test(queries.types) }}>
         <label for="culturalheritage">Kulturminne</label>
-        <input class="select-switch" type="checkbox" name="types" id="sound" value="Sound">
+        <input class="select-switch" type="checkbox" name="types" id="sound" value="Sound" {{ "checked" if r/Sound/.test(queries.types) }}>
         <label for="sound">Ljud</label>
-        <input class="select-switch" type="checkbox" name="types" id="organisation" value="Organisation">
+        <input class="select-switch" type="checkbox" name="types" id="organisation" value="Organisation" {{ "checked" if r/Organisation/.test(queries.types) }}>
         <label for="organisation">Organisation</label>
-        <input class="select-switch" type="checkbox" name="types" id="person" value="Person">
+        <input class="select-switch" type="checkbox" name="types" id="person" value="Person" {{ "checked" if r/Person/.test(queries.types) }}>
         <label for="person">Person</label>
-        <input class="select-switch" type="checkbox" name="types" id="blueprint" value="Blueprint">
+        <input class="select-switch" type="checkbox" name="types" id="blueprint" value="Blueprint" {{ "checked" if r/Blueprint/.test(queries.types) }}>
         <label for="blueprint">Ritning</label>
-        <input class="select-switch" type="checkbox" name="types" id="collection" value="Collection">
+        <input class="select-switch" type="checkbox" name="types" id="collection" value="Collection" {{ "checked" if r/Collection/.test(queries.types) }}>
         <label for="collection">Samling</label>
-        <input class="select-switch" type="checkbox" name="types" id="sketch" value="Sketch">
+        <input class="select-switch" type="checkbox" name="types" id="sketch" value="Sketch" {{ "checked" if r/Sketch/.test(queries.types) }}>
         <label for="sketch">Skiss</label>
-        <input class="select-switch" type="checkbox" name="types" id="exhibition" value="Exhibition">
+        <input class="select-switch" type="checkbox" name="types" id="exhibition" value="Exhibition" {{ "checked" if r/Exhibition/.test(queries.types) }}>
         <label for="exhibition">Utställning</label>
     </div>
 
     <p>Vad vill du sortera resultaten utefter?</p>
     <div class="select-switch-container">
-        <input class="select-switch" type="radio" name="sort" id="relevance" value="relevance" checked>
+        <input class="select-switch" type="radio" name="sort" id="relevance" value="relevance" {{ "checked" if queries.sort === "relevance"}}>
         <label for="relevance">Relevans</label>
 
-        <input class="select-switch" type="radio" name="sort" id="alphabetical" value="name">
-        <label for="alphabetical">Namn</label>
+        <input class="select-switch" type="radio" name="sort" id="name" value="name" {{ "checked" if queries.sort === "name"}}>
+        <label for="name">Namn</label>
 
-        <input class="select-switch" type="radio" name="sort" id="added-at" value="addedAt">
+        <input class="select-switch" type="radio" name="sort" id="added-at" value="addedAt" {{ "checked" if queries.sort === "addedAt" }}>
         <label for="added-at">Senast tillagd</label>
 
-        <input class="select-switch" type="radio" name="sort" id="updated-at" value="updatedAt">
+        <input class="select-switch" type="radio" name="sort" id="updated-at" value="updatedAt" {{ "checked" if queries.sort === "updatedAt" }}>
         <label for="updated-at">Senast uppdaterad</label>
 
-        <input class="select-switch" type="radio" name="sort" id="item-id" value="itemID">
+        <input class="select-switch" type="radio" name="sort" id="item-id" value="itemID" {{ "checked" if queries.sort === "itemID" }}>
         <label for="item-id">Inventarienummer</label>
     </div>
 
     <div>
-        <input type="checkbox" name="reverse" id="reverse">
+        <input type="checkbox" name="reverse" id="reverse" {{ "checked" if r/(1|on|true)/i.test(queries.reverse) }}>
         <label for="reverse">Jag vill sortera resultaten i omvänd ordning.</label>
     </div>
 
