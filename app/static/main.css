@@ -280,6 +280,7 @@ section > form {
     width: 90%;
     padding: 2rem;
     border-radius: .5rem;
+    overflow-x: auto;
 }
 
 .log > *, .keywords > * {
@@ -300,7 +301,7 @@ section > form {
     color: var(--accent-color)
 }
 
-.log > .message {
+.log > .message, .keywords .description {
     grid-column: 3;
     min-width: 100%;
 }
