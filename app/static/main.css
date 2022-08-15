@@ -291,17 +291,17 @@ section > form {
     border-bottom: 1px solid var(--standout-color);
 }
 
-.log > .timestamp {
+.log > .timestamp, .keywords > .type {
     grid-column: 1;
     color: var(--muted-color);
 }
 
-.log > .prefix {
+.log > .prefix, .keywords > .word {
     grid-column: 2;
     color: var(--accent-color)
 }
 
-.log > .message, .keywords .description {
+.log > .message, .keywords > .description {
     grid-column: 3;
     min-width: 100%;
 }
