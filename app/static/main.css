@@ -272,7 +272,7 @@ section > form {
     border-radius: .5rem;
 }
 
-.log {
+.log, .keywords {
     display: grid;
     grid-template-columns: auto auto 1fr;
     place-items: center start;
@@ -282,10 +282,11 @@ section > form {
     border-radius: .5rem;
 }
 
-.log > * {
-    margin: 0;
+.log > *, .keywords > * {
+    margin: auto 0;
     padding: .5rem;
     width: 100%;
+    height: 100%;
     border-bottom: 1px solid var(--standout-color);
 }
 

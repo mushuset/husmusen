@@ -2,7 +2,8 @@ import { Router } from "express"
 import YAML from "yaml"
 import DBInfo from "../models/DBInfo.js"
 import File from "../models/File.js"
-import Item from "../models/Item.js"
+import Item, { ItemTypes } from "../models/Item.js"
+import Keyword from "../models/Keyword.js"
 
 const routes = Router()
 
@@ -22,6 +23,13 @@ routes.get(
     (req, res) => File.get(req.params.fileID)
         .then(file => res.render("pages/file.njk", { file }))
         .catch(err => res.render("pages/file.njk", { err  }))
+)
+
+routes.get(
+    "/keywords",
+    (req, res) => Keyword.get(ItemTypes)
+        .then(keywords => res.render("pages/keywords.njk", { keywords }))
+        .catch(err     => res.render("pages/keywords.njk", {   err    }))
 )
 
 routes.get(

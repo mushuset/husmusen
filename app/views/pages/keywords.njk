@@ -1,0 +1,24 @@
+{% extends "templates/base.njk" %}
+
+{% block head %}
+    <title>Husmusen - Nyckelord</title>
+{% endblock %}
+
+{% block body %}
+    {% if err %}
+        <h1>Error!</h1>
+        <p>{{ err }}</p>
+    {% else %}
+        <div class="keywords">
+            <p style="grid-column: span 3">Tips! Du kan söka bland nyckelorden i de flesta webbläsare genom att klicka CTRL + F. <br></p>
+            <p><b>Typ:</b></p>
+            <p><b>Ord:</b></p>
+            <p><b>Beskrivning:</b></p>
+            {% for keyword in keywords %}
+                <p class="type">{{ keyword.type }}</p>
+                <p class="word">{{ keyword.word }}</p>
+                <p class="description">{{ keyword.description }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+{% endblock %}
