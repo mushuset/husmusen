@@ -21,12 +21,13 @@ const File = {
     /**
      * Creates a file object.
      * @param {string} name
-     * @param {string} type
-     * @param {string} license
+     * @param {string} description
+     * @param {string} type        MIME type of the file.
+     * @param {string} license     A license. (Can be pretty much anything.)
      * @param {ItemID} relatedItem The `ItemID` of the {@link Item} the file belongs to.
      * @returns {Promise<File_>} A freshly created file.
      */
-    create: (name, type, license, relatedItem) => new Promise(
+    create: (name, description, type, license, relatedItem) => new Promise(
         (resolve, reject) => {
             // Make sure the properties are defined...
             if (!name)
@@ -44,6 +45,7 @@ const File = {
             const now = new Date(Date.now())
             const file = {
                 name,
+                description,
                 type,
                 license,
                 fileID: randomUUID(),
@@ -60,10 +62,25 @@ const File = {
      * @param {FileID} fileID The {@link FileID} to find in the database.
      * @returns {Promise<File_>}
      */
-    get: fileID =>  queryDB(
-        "SELECT * FROM husmusen_files WHERE fileID = ?",
-        [ fileID ],
-        true
+    get: fileID => new Promise(
+        (resolve, reject) => {
+            queryDB(
+                "SELECT * FROM husmusen_files WHERE fileID = ?",
+                [ fileID ],
+                true
+            ).then(
+                file => {
+                    if (!file)
+                        reject("NO_EXISTS")
+
+                    resolve(file)
+                }
+            ).catch(reject)
+        }
+    ),
+    findForItem: itemID => queryDB(
+        "SELECT * FROM husmusen_files WHERE relatedItem =?",
+        [ itemID ]
     ),
     /**
      * Saves file (metadata information) to the database.

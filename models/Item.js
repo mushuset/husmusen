@@ -76,8 +76,7 @@ export const ItemTypes = [
  * @property {*}            customData   Custom data.
  * @property {boolean}      isExpired    Wheter or not the item has *expired*. E.g. gotten lost or destroyed.
  * @property {string}       expireReason The reason it got *expired*. E.g. it broke or disapeared.
- * @property {boolean}      hasThumbnail Whether ot not the item has a thumbnail image.
- * @property {Array<File_>} itemFiles    A list of {@link File_ Files} related to the item.
+ * @property {Array<File_>} files        A list of {@link File_ Files} related to the item.
  */
 
 const Item = {
@@ -132,7 +131,7 @@ const Item = {
                             customData: customData ?? {},
                             isExpired: false,
                             expireReason: "",
-                            itemFiles: []
+                            files: []
                         }
 
                         resolve(item)
@@ -153,13 +152,30 @@ const Item = {
                 [ itemID ],
                 true
             ).then(
-                async result => {
-                    if (!result)
+                async item => {
+                    if (!item)
                         reject("NO_EXISTS")
 
-                    File.findForItem
+                    const files = await File.findForItem(itemID)
+                    item.files  = files
+                        ? files.map(
+                            file => {
+                                file.url = {}
+                                file.url.info = `/api/1.0.0/file/info/${file.fileID}`
+                                // This will figure out the file extension from the filetype.
+                                // A filetype (MIME type) is in this format: "category/filetype".
+                                // This selectes `filetype`. It also ignores any "type+type"...
+                                // Examples:
+                                // image/png     --> "png"
+                                // image/svg+xml --> "svg"
+                                const fileExtension  = file.type.match(/(?<=^\w+\/)\w+(?=(\+\S*)?$)/gm)[0]
+                                file.url.data = `/api/1.0.0/file/get/${file.fileID}.${fileExtension}`
+                                return file
+                            }
+                        )
+                        : []
 
-                    resolve(result)
+                    resolve(item)
                 }
             ).catch(reject)
         }

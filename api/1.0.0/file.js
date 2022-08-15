@@ -14,16 +14,22 @@ const log = getLogger("Database |", "magenta")
 fileApi.get(
     "/get/:id",
     (req, res) => {
-        // Make sure you can't traverse the filesystem with '..' and '/'.
         const sanitisedItemID = req.params.id
-            .replace(/[./\\]+/g, "")
-
-
+            // Make sure to remove the file extension...
+            .replace(/\.\w+$/, "")
+            // Also remove any non-hexadecemial character or daash (-). '..' and '/'.
+            .replace(/[^0-9a-fA-F-]+/g, "")
 
         File.get(sanitisedItemID)
             .then(
                 file => {
-                    const fileExtension = file.type.replace(/^\w+\//, "")
+                    // This will figure out the file extension from the filetype.
+                    // A filetype (MIME type) is in this format: "category/filetype".
+                    // This selectes `filetype`. It also ignores any "type+type"...
+                    // Examples:
+                    // image/png     --> "png"
+                    // image/svg+xml --> "svg"
+                    const fileExtension  = file.type.match(/(?<=^\w+\/)\w+(?=(\+\S*)?$)/gm)[0]
 
                     //Check if the file exists. If it doesn't, send an error.
                     if (!existsSync(`./data/files/${sanitisedItemID}.${fileExtension}`))
@@ -31,6 +37,13 @@ fileApi.get(
 
                     // Send back the file.
                     res.sendFile(path.join(`${path.resolve()}/data/files/${file.fileID}.${fileExtension}`))
+                }
+            )
+            .catch(
+                err => {
+                    res.failit(HusmusenError(404, "ERR_FILE_NOT_FOUND", "It appears this file does not exist."))
+                    log.error("It appears this file does not exist...")
+                    console.error(err)
                 }
             )
 
@@ -62,18 +75,25 @@ fileApi.post(
     (req, res) => {
         const {
             name,
+            description,
             type,
             license,
             relatedItem,
             fileDataURL
         } = req.data
 
-        console.dir(fileDataURL)
+        // This will figure out the file extension from the filetype.
+        // A filetype (MIME type) is in this format: "category/filetype".
+        // This selectes `filetype`. It also ignores any "type+type"...
+        // Examples:
+        // image/png     --> "png"
+        // image/svg+xml --> "svg"
+        const fileExtension  = type.match(/(?<=^\w+\/)\w+(?=(\+\S*)?$)/gm)[0]
+        // This will select all the data in the dataurl
         const fileData       = fileDataURL.split(",")[1]
         const fileDataBuffer = Buffer.from(fileData, "base64")
-        const fileExtension  = type.replace(/^\w+\//, "")
 
-        File.create(name, type, license, relatedItem)
+        File.create(name, description, type, license, relatedItem)
             .then(
                 async file => {
                     writeFile(`./data/files/${file.fileID}.${fileExtension}`, fileDataBuffer)

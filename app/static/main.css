@@ -203,6 +203,10 @@ form input:focus, form input:active, form select:focus, form select:active, form
     margin-bottom: 1rem;
 }
 
+.item img {
+    width: min(24ch, 60%);
+}
+
 .keyword {
     display: inline-block;
     color: var(--bg-color);

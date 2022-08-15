@@ -44,7 +44,23 @@
             <p>item.expireReason</p>
         {% endif %}
         <h2>Filer</h2>
-        <p>Det finns inga filer för det här föremålet!</p>
+        {% if item.files[0] %}
+            {% for file in item.files %}
+                <div class="file">
+                    <h3>{{ file.name }}</h3>
+                    <p>{{ file.description }}</p>
+                    <p>Licens: {{ file.license }}</p>
+                    <p>Typ av fil: {{ file.type }}</p>
+                    {% if file.type.includes("image/") %}
+                        <p>Förhandsvisning:</p>
+                        <img src="{{ file.url.data }}" alt="{{ file.description }}">
+                    {% endif %}
+                    <p>Länkar: <a href="{{ file.url.data }}" download>Ladda ned!</a> <a href="/app/file/{{ file.fileID }}">Perma-länk.</a></p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Det finns inga filer för det här föremålet!</p>
+        {% endif %}
     </div>
 {% endif %}
 {% endblock %}

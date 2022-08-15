@@ -18,6 +18,13 @@ routes.get(
 )
 
 routes.get(
+    "/file/:fileID",
+    (req, res) => File.get(req.params.fileID)
+        .then(file => res.render("pages/file.njk", { file }))
+        .catch(err => res.render("pages/file.njk", { err  }))
+)
+
+routes.get(
     "/db_info",
     (_, res) => DBInfo.get()
         .then(dbInfo => res.render("pages/db_info.njk", { dbInfo }))

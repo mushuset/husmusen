@@ -1,0 +1,26 @@
+
+{% extends "templates/base.njk" %}
+
+{% block head %}
+    <title>{{ file.name or "Error!" }}</title>
+{% endblock %}
+
+{% block body %}
+    {% if err %}
+        <h1>Error!</h1>
+        <p>{{ err }}</p>
+    {% else %}
+        <div class="item single-view">
+            <h1>{{ file.name }}</h1>
+            <p>{{ file.description }}</p>
+            <p>Licens: {{ file.license }}</p>
+            <p>Typ av fil: {{ file.type }}</p>
+            {% if file.type.includes("image/") %}
+                <p>Förhandsvisning:</p>
+                {% set fileExtensionRegexp = r/(?<=^\w+\/)\w+(?=(\+\S*)?$)/gm %}
+                <img src="/api/1.0.0/file/get/{{ file.fileID }}.{{ fileExtensionRegexp.exec(file.type) }}" alt="{{ file.description }}">
+            {% endif %}
+            <p>Länkar: <a href="/api/1.0.0/file/get/{{ file.fileID }}.{{ fileExtensionRegexp.exec(file.type) }}" download>Ladda ned!</a> <a href="/app/file/{{ file.fileID }}">Perma-länk.</a></p>
+        </div>
+    {% endif %}
+{% endblock %}
