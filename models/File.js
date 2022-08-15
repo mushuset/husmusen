@@ -146,7 +146,6 @@ const File = {
      */
     // TODO: This function and functions alike it returns a Promise to simply pass it on via resolve and reject.
     //       It could be changed to just return the Promise directly and skip 'passing it on'...
-    // TODO: Make sure this also deletes the file from the uploads folder.
     delete: fileID => new Promise(
         (resolve, reject) => queryDB(
             "DELETE FROM husmusen_files WHERE fileID = ?",

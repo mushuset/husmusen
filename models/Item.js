@@ -1,4 +1,5 @@
 import { queryDB } from "../lib/database.js"
+import File from "./File.js"
 import Keyword from "./Keyword.js"
 
 /** @typedef {import("./File").File_} File_ */
@@ -152,9 +153,11 @@ const Item = {
                 [ itemID ],
                 true
             ).then(
-                result => {
+                async result => {
                     if (!result)
                         reject("NO_EXISTS")
+
+                    File.findForItem
 
                     resolve(result)
                 }
