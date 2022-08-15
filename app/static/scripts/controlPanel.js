@@ -256,3 +256,58 @@ ${newFileData.replace(/^(?!$)/gm, "  ")}`
             )
     }
 )
+
+// FIXME: This looks very much like the above function.
+// It could probably be generalised to have one function for each.
+// ---
+// Handle the edit-file-form:
+const editKeywordsForm = document.querySelector("#edit-keywords-form")
+editKeywordsForm?.addEventListener(
+    "submit",
+    event => {
+        event.preventDefault()
+
+        const formData     = new FormData(editKeywordsForm)
+        const keywordsData = formData.get("newKeywordData")
+
+        const payload = keywordsData
+            .split("\n")
+            // Make sure the line is in the format `<TYPE>: <KEYWORD>: <DESCRIPTION>
+            .filter(line => line.match(/^\w+: .+: .+$/))
+            .sort((a, b) => a.localeCompare(b))
+            .map(
+                line => {
+                    const [ type, word, ...description ] = line.split(/: +/)
+                    const keyword = {
+                        type,
+                        word,
+                        description: description.join(": ")
+                    }
+                    return keyword
+                }
+            )
+
+
+        fetch(
+            editKeywordsForm.getAttribute("action"),
+            {
+                method: editKeywordsForm.getAttribute("method"),
+                headers: {
+                    "Husmusen-Access-Token": localStorage.getItem("api-token"),
+                    "Content-Type": "application/yaml"
+                },
+                body: JSON.stringify(payload)
+            }
+        )
+            .then(checkSuccess)
+            .then(
+                data => alert("Klar! Information: " + JSON.stringify(data))
+            )
+            .catch(
+                err => {
+                    alert("Error! Kolla i konsolen för mer information.")
+                    console.error(err)
+                }
+            )
+    }
+)

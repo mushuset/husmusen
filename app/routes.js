@@ -102,7 +102,28 @@ routes.get(
             )
         )
         .catch(
-            err => res.render("pages/control_panel/edit_item.njk", { err })
+            err => res.render("pages/control_panel/edit_file.njk", { err })
+        )
+)
+
+routes.get(
+    "/control_panel/edit_keywords",
+    (req, res) => Keyword.get(ItemTypes)
+        .then(
+            keywords => res.render(
+                "pages/control_panel/edit_keywords.njk",
+                {
+                    keywordsAsText: keywords
+                        // Format keywords as text.
+                        .map(keyword => `${keyword.type}: ${keyword.word}: ${keyword.description}`)
+                        // Sort the keywords alphabetically...
+                        .sort((a, b) => a.localeCompare(b))
+                        .join("\n")
+                }
+            )
+        )
+        .catch(
+            err => res.render("pages/control_panel/edit_keywords.njk", { err })
         )
 )
 
