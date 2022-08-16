@@ -128,6 +128,13 @@ routes.get(
         )
 )
 
+routes.get(
+    "/control_panel/edit_dbinfo",
+    (_, res) => DBInfo.get()
+        .then(dbInfo => res.render("pages/control_panel/edit_dbinfo.njk", { dbInfoAsYAML: YAML.stringify(dbInfo) }))
+        .catch(err => res.render("pages/control_panel/edit_dbinfo.njk", { err }))
+)
+
 routes.get("/control_panel/log", (_, res) => res.render("pages/control_panel/log.njk"))
 
 if (process.env.DEBUG === "true")
