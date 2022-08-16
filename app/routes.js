@@ -47,10 +47,11 @@ routes.get("/control_panel", (req, res) => res.render("pages/control_panel/index
 
 routes.get(
     "/control_panel/new_item",
-    (req, res) => res.render(
+    async (req, res) => res.render(
         "pages/control_panel/new_item.njk",
         {
-            queries: req.query
+            queries: req.query,
+            nextItemID: await Item.getNextItemID().catch()
         }
     )
 )

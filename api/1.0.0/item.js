@@ -141,7 +141,6 @@ itemApi.post(
             description,
             keywords,
             type,
-            itemID,
             itemData,
             customData
         } = req.data
@@ -151,7 +150,6 @@ itemApi.post(
             description,
             keywords,
             type,
-            itemID,
             itemData,
             customData
         ).then(
@@ -160,12 +158,12 @@ itemApi.post(
                 Item.save(item)
                     .then(item => {
                         res.sendit(item)
-                        log.write(`${req.auth.isAdmin ? "Admin" : "User"} '${req.auth.username}' created item with ID '${itemID}'.`)
+                        log.write(`${req.auth.isAdmin ? "Admin" : "User"} '${req.auth.username}' created item with ID '${item.itemID}'.`)
                     })
                     // If errors are encountered, handle them:
                     .catch(err => {
                         if (err.code === "ER_DUP_ENTRY")
-                            return res.failit(HusmusenError(500, "ERR_ALREADY_EXISTS",`The itemID '${itemID}' is already taken!`))
+                            return res.failit(HusmusenError(500, "ERR_ALREADY_EXISTS",`The itemID '${item.itemID}' is already taken!`))
 
                         res.failit(HusmusenError(500, "ERR_DATABASE_ERROR", "Error while saving the item!"))
                         log.error("There was an error saving an item...")

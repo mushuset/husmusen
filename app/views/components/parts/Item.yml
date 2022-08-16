@@ -2,4 +2,6 @@ name: "Namn"
 description: "Beskrivande beskrvning"
 keywords: "Nyckelord1,Nyckelord2,Nyckelord3,Etc."
 type: "{{ queries.type or \"Book\" }}"
-itemID: 1000
+# Det här är bara en förhandsvisning av det inventarienummer
+# som föremålet kommer få; det kan inte ändras.
+itemID: {{ nextItemID or "1000" }}

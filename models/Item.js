@@ -86,12 +86,11 @@ const Item = {
      * @param {string}   description  A description of the object.
      * @param {string}   keywords     Commaseparated list of keywords.
      * @param {ItemType} type         The type of item.
-     * @param {ItemID}   itemID       A unique identifier for the item. (In this implementation an inventory number.)
      * @param {ItemData} itemData     The item's data. Differemt for every {@link ItemType}.
      * @param {*}        customData   Custom data.
      * @returns {Promise<Item>} Resolves with an {@link Item} or rejects with an error.
      */
-    create: (name, description, keywords, type, itemID, itemData, customData) => new Promise(
+    create: (name, description, keywords, type, itemData, customData) => new Promise(
         (resolve, reject) => {
             // Check if name is missing.
             if (!name)
@@ -104,7 +103,7 @@ const Item = {
             // Check if keywords are valid.
             Keyword.get([ type ])
                 .then(
-                    allKeywordsForType => {
+                    async allKeywordsForType => {
                         const allKeywordsForTypeAsWords = allKeywordsForType.map(keyword => keyword.word)
                         const validKeywords = keywords
                             .split(",")
@@ -115,6 +114,8 @@ const Item = {
                             .sort((a, b) => a.localeCompare(b))
                             // Join back to a comma-separated string.
                             .join(",")
+
+                        const itemID = await Item.getNextItemID().catch(reject)
 
                         const now = new Date(Date.now())
 
@@ -333,6 +334,27 @@ const Item = {
                 "DELETE FROM husmusen_items WHERE itemID = ?",
                 [ itemID ]
             ).then(resolve).catch(reject)
+        }
+    ),
+    /**
+     * Resolves with an {@link ItemID} on success, rejects on error.
+     * @returns {Promise<ItemID>}
+     */
+    getNextItemID: () => new Promise(
+        (resolve, reject) => {
+            queryDB(
+                "SELECT itemID FROM husmusen_items ORDER BY itemID DESC LIMIT 1",
+                [],
+                true
+            )
+                // The next ItemID is the current largest `itemID` + 1.
+                .then(item => {
+                    if (!item)
+                        return resolve(1)
+
+                    resolve(item.itemID + 1)
+                })
+                .catch(reject)
         }
     )
 }
