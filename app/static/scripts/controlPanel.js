@@ -71,10 +71,10 @@ fileCreationForm?.addEventListener(
     async event => {
         event.preventDefault()
         const formData = new FormData(fileCreationForm)
-        const file     = formData.get("fileDataBuffer")
+        const file = formData.get("fileDataBuffer")
         const fileMIME = file.type
 
-        const rawFileData    = document.querySelector("#file-data-buffer").files[0]
+        const rawFileData = document.querySelector("#file-data-buffer").files[0]
         const fileDataURL = await getFileDataBufferToDataURL(rawFileData)
             .catch(
                 err => {
@@ -180,8 +180,8 @@ editItemForm?.addEventListener(
     "submit",
     event => {
         event.preventDefault()
-        const formData    = new FormData(editItemForm)
-        const itemID      = formData.get("itemID")
+        const formData = new FormData(editItemForm)
+        const itemID = formData.get("itemID")
         const newItemData = formData.get("newItemData")
 
         // This part has to look like this so the YAML gets formatted properly.
@@ -223,8 +223,8 @@ editFileForm?.addEventListener(
     "submit",
     event => {
         event.preventDefault()
-        const formData    = new FormData(editFileForm)
-        const fileID      = formData.get("fileID")
+        const formData = new FormData(editFileForm)
+        const fileID = formData.get("fileID")
         const newFileData = formData.get("newFileData")
 
         // This part has to look like this so the YAML gets formatted properly.
@@ -267,7 +267,7 @@ editKeywordsForm?.addEventListener(
     event => {
         event.preventDefault()
 
-        const formData     = new FormData(editKeywordsForm)
+        const formData = new FormData(editKeywordsForm)
         const keywordsData = formData.get("newKeywordData")
 
         const payload = keywordsData
@@ -277,7 +277,7 @@ editKeywordsForm?.addEventListener(
             .sort((a, b) => a.localeCompare(b))
             .map(
                 line => {
-                    const [ type, word, ...description ] = line.split(/: +/)
+                    const [type, word, ...description] = line.split(/: +/)
                     const keyword = {
                         type,
                         word,
@@ -294,7 +294,7 @@ editKeywordsForm?.addEventListener(
                 method: editKeywordsForm.getAttribute("method"),
                 headers: {
                     "Husmusen-Access-Token": localStorage.getItem("api-token"),
-                    "Content-Type": "application/yaml"
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify(payload)
             }
